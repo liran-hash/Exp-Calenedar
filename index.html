@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Experiment Calendar Generator</title>
+<title>Experiment Calendar</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -15,6 +15,8 @@
     --muted: #7a7468;
     --accent: #2d6a4f;
     --accent-light: #e8f5ef;
+    --outlook: #0078d4;
+    --outlook-light: #e8f3fc;
     --mono: 'DM Mono', monospace;
     --serif: 'Instrument Serif', serif;
     --sans: 'DM Sans', sans-serif;
@@ -27,65 +29,98 @@
     color: var(--text);
     font-family: var(--sans);
     min-height: 100vh;
-    padding: 0 0 80px;
   }
 
+  /* ── HEADER ── */
   header {
     background: var(--text);
     color: var(--bg);
-    padding: 24px 40px;
+    padding: 20px 32px;
     display: flex;
-    align-items: baseline;
-    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
   }
+
+  .header-left { display: flex; align-items: baseline; gap: 14px; }
 
   header h1 {
     font-family: var(--serif);
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 400;
     font-style: italic;
   }
 
   header span {
     font-family: var(--mono);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #a09a8e;
     letter-spacing: 1px;
     text-transform: uppercase;
   }
 
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    background: var(--text);
+    padding: 0 32px;
+    border-bottom: none;
+    gap: 4px;
+  }
+
+  .tab-btn {
+    padding: 10px 22px;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: transparent;
+    color: #a09a8e;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .tab-btn:hover { color: var(--bg); }
+
+  .tab-btn.active {
+    color: var(--bg);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ── TAB CONTENT ── */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── BUILDER TAB ── */
   .main-layout {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 300px;
     gap: 20px;
     max-width: 1160px;
     margin: 0 auto;
-    padding: 28px 20px 0;
+    padding: 24px 20px 80px;
     align-items: start;
   }
 
   .left-col { min-width: 0; }
-
-  .right-col {
-    position: sticky;
-    top: 20px;
-  }
+  .right-col { position: sticky; top: 20px; }
 
   .section {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 22px;
-    margin-bottom: 16px;
+    padding: 20px;
+    margin-bottom: 14px;
   }
 
   .section-title {
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: 0.63rem;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: var(--muted);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
   }
@@ -93,30 +128,30 @@
   .field-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 14px;
+    gap: 12px;
+    margin-bottom: 12px;
   }
 
   .field-row.single { grid-template-columns: 1fr; }
 
   label {
     display: block;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.4px;
     color: var(--muted);
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     text-transform: uppercase;
   }
 
   input[type="text"], input[type="date"], input[type="time"],
   input[type="email"], textarea, select {
     width: 100%;
-    padding: 9px 12px;
+    padding: 8px 11px;
     border: 1px solid var(--border);
     border-radius: 5px;
     font-family: var(--sans);
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     background: var(--bg);
     color: var(--text);
     transition: border-color 0.15s;
@@ -128,25 +163,25 @@
     background: #fff;
   }
 
-  textarea { resize: vertical; min-height: 56px; }
+  textarea { resize: vertical; min-height: 52px; }
 
   /* Events table */
   .events-table { width: 100%; border-collapse: collapse; }
 
   .events-table th {
     font-family: var(--mono);
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--muted);
-    padding: 7px 8px;
+    padding: 6px 7px;
     text-align: left;
     border-bottom: 1px solid var(--border);
     background: var(--bg);
   }
 
   .events-table td {
-    padding: 5px 5px;
+    padding: 4px 4px;
     border-bottom: 1px solid #f0ede8;
     vertical-align: middle;
   }
@@ -156,27 +191,26 @@
   .events-table input[type="text"],
   .events-table input[type="number"],
   .events-table input[type="time"] {
-    padding: 6px 8px;
-    font-size: 0.83rem;
+    padding: 5px 7px;
+    font-size: 0.82rem;
   }
 
-  .events-table input[type="number"] { width: 64px; }
-  .event-name-cell { min-width: 140px; }
+  .events-table input[type="number"] { width: 60px; }
+  .event-name-cell { min-width: 130px; }
 
   .computed-date {
     font-family: var(--mono);
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     color: var(--accent);
     white-space: nowrap;
-    padding: 0 6px;
+    padding: 0 5px;
   }
 
   .toggle {
     appearance: none;
-    width: 34px;
-    height: 19px;
+    width: 32px; height: 18px;
     background: #ccc;
-    border-radius: 10px;
+    border-radius: 9px;
     cursor: pointer;
     position: relative;
     transition: background 0.2s;
@@ -187,29 +221,29 @@
   .toggle::after {
     content: '';
     position: absolute;
-    width: 13px; height: 13px;
+    width: 12px; height: 12px;
     background: white;
     border-radius: 50%;
     top: 3px; left: 3px;
     transition: left 0.2s;
   }
 
-  .toggle:checked::after { left: 18px; }
+  .toggle:checked::after { left: 17px; }
   .skipped-row td { opacity: 0.35; }
 
   /* Buttons */
   .btn {
-    padding: 9px 18px;
+    padding: 8px 16px;
     border-radius: 5px;
     font-family: var(--sans);
-    font-size: 0.83rem;
+    font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
     border: none;
     transition: all 0.15s;
   }
 
-  .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+  .btn-sm { padding: 5px 11px; font-size: 0.76rem; }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover { background: #235c42; }
   .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
@@ -220,16 +254,16 @@
     justify-content: flex-end; margin-top: 4px;
   }
 
-  .generate-bar .btn-primary { padding: 12px 30px; font-size: 0.92rem; }
+  .generate-bar .btn-primary { padding: 11px 28px; font-size: 0.9rem; }
 
   /* Output */
-  .output-section { display: none; margin-top: 16px; margin-bottom: 16px; }
+  .output-section { display: none; margin-top: 14px; }
   .output-section.visible { display: block; }
 
   .output-inner {
     background: var(--accent);
     border-radius: 8px;
-    padding: 24px 28px;
+    padding: 22px 26px;
     text-align: center;
     color: white;
   }
@@ -242,20 +276,20 @@
 
   .output-summary {
     font-family: var(--mono);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: rgba(255,255,255,0.85);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .download-zip-btn {
     background: white;
     color: var(--accent);
-    padding: 14px 40px;
+    padding: 13px 36px;
     border-radius: 6px;
     border: none;
     font-family: var(--sans);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -264,40 +298,37 @@
     transition: transform 0.1s, box-shadow 0.1s;
   }
 
-  .download-zip-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  }
+  .download-zip-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
 
   .output-hint {
-    margin-top: 14px;
-    font-size: 0.76rem;
+    margin-top: 12px;
+    font-size: 0.73rem;
     color: rgba(255,255,255,0.6);
     font-style: italic;
     line-height: 1.6;
   }
 
-  /* Calendar */
-  .calendar-section {
+  /* Mini calendar (right panel) */
+  .mini-cal-panel {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 18px;
-    max-height: 90vh;
+    padding: 16px;
+    max-height: 88vh;
     overflow-y: auto;
   }
 
-  .mini-month { margin-bottom: 22px; }
+  .mini-month { margin-bottom: 20px; }
   .mini-month:last-of-type { margin-bottom: 0; }
 
   .month-header {
     font-family: var(--mono);
-    font-size: 0.7rem;
+    font-size: 0.67rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text);
     font-weight: 500;
-    margin-bottom: 7px;
+    margin-bottom: 6px;
   }
 
   .mini-cal-grid {
@@ -308,71 +339,425 @@
 
   .cal-dow {
     font-family: var(--mono);
-    font-size: 0.58rem;
+    font-size: 0.56rem;
     color: var(--muted);
     text-align: center;
-    padding: 2px 0 3px;
+    padding: 1px 0 3px;
   }
 
   .cal-day {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     text-align: center;
-    padding: 3px 1px;
-    min-height: 20px;
+    padding: 2px 1px;
+    min-height: 19px;
     line-height: 1.5;
+    border-radius: 3px;
   }
 
   .cal-day.today { font-weight: 700; color: #b5451b; }
 
-  .cal-day.has-event {
+  .cal-day.has-new {
     background: var(--accent);
     color: white;
     border-radius: 50%;
     font-weight: 700;
-    cursor: pointer;
-    width: 22px;
-    height: 22px;
+    width: 20px; height: 20px;
     margin: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.68rem;
+    font-size: 0.65rem;
+    cursor: pointer;
   }
 
-  .cal-day.has-event:hover { background: #235c42; }
+  .cal-day.has-new:hover { background: #235c42; }
 
   .cal-legend {
-    margin-top: 12px;
-    padding-top: 10px;
+    margin-top: 10px;
+    padding-top: 8px;
     border-top: 1px solid var(--border);
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     color: var(--muted);
     font-style: italic;
-    line-height: 1.6;
+    line-height: 1.7;
   }
 
+  .legend-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  /* ── CALENDAR TAB ── */
+  .cal-tab-layout {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+
+  .cal-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .cal-toolbar-left { display: flex; align-items: center; gap: 10px; }
+  .cal-toolbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  .cal-nav-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 7px 13px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: background 0.15s;
+  }
+
+  .cal-nav-btn:hover { background: var(--border); }
+
+  .cal-title {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-style: italic;
+    min-width: 200px;
+    text-align: center;
+  }
+
+  .view-toggle {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .view-btn {
+    padding: 7px 16px;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .view-btn.active {
+    background: var(--text);
+    color: white;
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    background: var(--surface);
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--outlook);
+    background: var(--outlook-light);
+  }
+
+  .upload-zone input { display: none; }
+
+  .upload-label {
+    font-size: 0.82rem;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .upload-label strong { color: var(--outlook); }
+
+  .upload-count {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--outlook);
+    background: var(--outlook-light);
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+
+  /* Legend bar */
+  .legend-bar {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.76rem;
+    color: var(--muted);
+  }
+
+  .legend-swatch {
+    width: 12px; height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── MONTH VIEW ── */
+  .month-grid {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .month-dow-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .month-dow {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    padding: 8px;
+    text-align: center;
+  }
+
+  .month-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .month-cell {
+    border-right: 1px solid #ede9e3;
+    border-bottom: 1px solid #ede9e3;
+    min-height: 90px;
+    padding: 4px;
+    vertical-align: top;
+    position: relative;
+  }
+
+  .month-cell:nth-child(7n) { border-right: none; }
+
+  .month-cell.other-month { background: #faf8f4; }
+  .month-cell.today-cell { background: #fff9f0; }
+
+  .month-day-num {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 3px;
+    display: inline-block;
+    width: 22px; height: 22px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 50%;
+  }
+
+  .month-cell.today-cell .month-day-num {
+    background: #b5451b;
+    color: white;
+  }
+
+  .month-event {
+    font-size: 0.68rem;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: default;
+    line-height: 1.4;
+  }
+
+  .month-event.outlook-ev {
+    background: var(--outlook-light);
+    color: var(--outlook);
+    border-left: 2px solid var(--outlook);
+  }
+
+  .month-event.new-ev {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-left: 2px solid var(--accent);
+    font-weight: 600;
+  }
+
+  .month-event.conflict-ev {
+    background: #fff0ed;
+    color: #b5451b;
+    border-left: 2px solid #b5451b;
+  }
+
+  /* ── WEEK VIEW ── */
+  .week-grid {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .week-header-row {
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .week-header-cell {
+    padding: 8px 6px;
+    text-align: center;
+    border-right: 1px solid #ede9e3;
+  }
+
+  .week-header-cell:last-child { border-right: none; }
+
+  .week-day-name {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+  }
+
+  .week-day-num {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    display: inline-block;
+    width: 32px; height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 50%;
+    margin-top: 2px;
+  }
+
+  .week-day-num.today-num {
+    background: #b5451b;
+    color: white;
+  }
+
+  .week-body {
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+  }
+
+  .week-time-col {
+    border-right: 1px solid #ede9e3;
+  }
+
+  .week-time-slot {
+    height: 48px;
+    border-bottom: 1px solid #f0ede8;
+    padding: 2px 6px;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--muted);
+    line-height: 1;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .week-day-col {
+    border-right: 1px solid #ede9e3;
+    position: relative;
+    min-height: 576px; /* 12 hours * 48px */
+  }
+
+  .week-day-col:last-child { border-right: none; }
+
+  .week-day-col.today-col { background: #fffcf8; }
+
+  .week-slot {
+    height: 48px;
+    border-bottom: 1px solid #f5f2ec;
+  }
+
+  .week-event {
+    position: absolute;
+    left: 2px; right: 2px;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-size: 0.65rem;
+    overflow: hidden;
+    cursor: default;
+    z-index: 1;
+    line-height: 1.3;
+  }
+
+  .week-event.outlook-ev {
+    background: var(--outlook-light);
+    color: var(--outlook);
+    border-left: 3px solid var(--outlook);
+  }
+
+  .week-event.new-ev {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-left: 3px solid var(--accent);
+    font-weight: 600;
+  }
+
+  .week-event.conflict-ev {
+    background: #fff0ed;
+    color: #b5451b;
+    border-left: 3px solid #b5451b;
+  }
+
+  /* Tooltip */
   .event-tooltip {
     position: fixed;
     background: var(--text);
     color: var(--bg);
-    padding: 5px 10px;
+    padding: 7px 12px;
     border-radius: 5px;
-    font-size: 0.73rem;
+    font-size: 0.74rem;
     font-family: var(--mono);
     pointer-events: none;
-    z-index: 1000;
+    z-index: 2000;
     white-space: nowrap;
     display: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    line-height: 1.6;
+    max-width: 280px;
+    white-space: normal;
   }
 
-  .hint { font-size: 0.76rem; color: var(--muted); font-style: italic; margin-top: 5px; }
+  .hint { font-size: 0.74rem; color: var(--muted); font-style: italic; margin-top: 5px; }
 
-  @media (max-width: 820px) {
+  .no-events-msg {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 860px) {
     .main-layout { grid-template-columns: 1fr; }
     .right-col { position: static; }
-    header { padding: 18px 20px; }
-    header h1 { font-size: 1.4rem; }
+    header { padding: 16px 18px; }
+    header h1 { font-size: 1.3rem; }
+    .tabs { padding: 0 18px; }
   }
 </style>
 </head>
@@ -381,98 +766,162 @@
 <div id="tooltip" class="event-tooltip"></div>
 
 <header>
-  <h1>Experiment Calendar</h1>
-  <span>Outlook Meeting Generator</span>
+  <div class="header-left">
+    <h1>Experiment Calendar</h1>
+    <span>Hazera Breeding</span>
+  </div>
 </header>
 
-<div class="main-layout">
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('builder')">Schedule Builder</button>
+  <button class="tab-btn" onclick="switchTab('calendar')">Calendar View</button>
+</div>
 
-  <div class="left-col">
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB 1: BUILDER -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-builder" class="tab-content active">
+  <div class="main-layout">
 
-    <div class="section">
-      <div class="section-title">Experiment Details</div>
-      <div class="field-row">
-        <div>
-          <label>Experiment Name</label>
-          <input type="text" id="expName" placeholder="e.g. Tomato Trial 2026 — Block A" />
+    <div class="left-col">
+
+      <div class="section">
+        <div class="section-title">Experiment Details</div>
+        <div class="field-row">
+          <div>
+            <label>Experiment Name</label>
+            <input type="text" id="expName" placeholder="e.g. Tomato Trial 2026 — Block A" oninput="renderMiniCal()" />
+          </div>
+          <div>
+            <label>Location / Greenhouse</label>
+            <input type="text" id="expLocation" placeholder="e.g. GH-3" />
+          </div>
         </div>
-        <div>
-          <label>Location / Greenhouse</label>
-          <input type="text" id="expLocation" placeholder="e.g. GH-3" />
+        <div class="field-row">
+          <div>
+            <label>Start Date (Day 0)</label>
+            <input type="date" id="startDate" />
+          </div>
+          <div>
+            <label>Default Event Time</label>
+            <input type="time" id="defaultTime" value="08:00" />
+          </div>
+        </div>
+        <div class="field-row single">
+          <div>
+            <label>Notes (added to all events)</label>
+            <textarea id="expNotes" placeholder="Optional: protocol, instructions, links..."></textarea>
+          </div>
         </div>
       </div>
-      <div class="field-row">
-        <div>
-          <label>Start Date (Day 0)</label>
-          <input type="date" id="startDate" />
-        </div>
-        <div>
-          <label>Default Event Time</label>
-          <input type="time" id="defaultTime" value="08:00" />
+
+      <div class="section">
+        <div class="section-title">Events Schedule</div>
+        <table class="events-table">
+          <thead>
+            <tr>
+              <th>On</th>
+              <th>Event Name</th>
+              <th>Day +</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody id="eventsBody"></tbody>
+        </table>
+        <div style="margin-top:10px;">
+          <button class="btn btn-sm btn-secondary" onclick="addCustomEvent()">+ Add Event</button>
         </div>
       </div>
-      <div class="field-row single">
-        <div>
-          <label>Notes (added to all events)</label>
-          <textarea id="expNotes" placeholder="Optional: protocol, instructions, links..."></textarea>
+
+      <div class="generate-bar">
+        <span class="hint">Download ZIP → double-click each .ics → add participants → Send</span>
+        <button class="btn btn-primary" onclick="generateAll()">Generate ICS Files</button>
+      </div>
+
+      <div class="output-section" id="outputSection">
+        <div class="output-inner">
+          <div class="section-title">Ready</div>
+          <div class="output-summary" id="outputSummary"></div>
+          <button class="download-zip-btn" onclick="downloadZip()">⬇ Download ZIP</button>
+          <div class="output-hint">
+            Extract the ZIP · Double-click each .ics to open in Outlook desktop<br>
+            Add participants · Review · Click Send
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="section">
-      <div class="section-title">Events Schedule</div>
-      <table class="events-table">
-        <thead>
-          <tr>
-            <th>On</th>
-            <th>Event Name</th>
-            <th>Day +</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-        <tbody id="eventsBody"></tbody>
-      </table>
-      <div style="margin-top:12px;">
-        <button class="btn btn-sm btn-secondary" onclick="addCustomEvent()">+ Add Event</button>
-      </div>
-    </div>
+    </div><!-- end left-col -->
 
-    <div class="generate-bar">
-      <span class="hint">Download ZIP → double-click each .ics → add participants → Send</span>
-      <button class="btn btn-primary" onclick="generateAll()">Generate ICS Files</button>
-    </div>
-
-    <div class="output-section" id="outputSection">
-      <div class="output-inner">
-        <div class="section-title">Ready</div>
-        <div class="output-summary" id="outputSummary"></div>
-        <button class="download-zip-btn" onclick="downloadZip()">⬇ Download ZIP</button>
-        <div class="output-hint">
-          Extract the ZIP · Double-click each .ics to open in Outlook desktop<br>
-          Add participants · Review · Click Send
+    <!-- Mini calendar panel -->
+    <div class="right-col">
+      <div class="mini-cal-panel">
+        <div class="section-title">Schedule Overview</div>
+        <div id="miniCalContainer">
+          <p class="hint">Set a start date to preview your events.</p>
         </div>
       </div>
     </div>
 
   </div>
+</div>
 
-  <!-- RIGHT: Calendar -->
-  <div class="right-col">
-    <div class="calendar-section">
-      <div class="section-title">Schedule Overview</div>
-      <div id="calendarContainer">
-        <p class="hint">Set a start date to see events on the calendar.</p>
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB 2: CALENDAR VIEW -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-calendar" class="tab-content">
+  <div class="cal-tab-layout">
+
+    <div class="cal-toolbar">
+      <div class="cal-toolbar-left">
+        <button class="cal-nav-btn" onclick="calNav(-1)">&#8592;</button>
+        <div class="cal-title" id="calTitle"></div>
+        <button class="cal-nav-btn" onclick="calNav(1)">&#8594;</button>
+        <button class="cal-nav-btn" onclick="goToday()" style="font-size:0.78rem;padding:7px 10px;">Today</button>
+      </div>
+      <div class="cal-toolbar-right">
+        <!-- Upload -->
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvInput').click()">
+          <input type="file" id="csvInput" accept=".csv" onchange="loadCSV(event)" />
+          <span class="upload-label"><strong>Upload</strong> Outlook CSV export</span>
+          <span class="upload-count" id="uploadCount" style="display:none"></span>
+        </div>
+        <!-- View toggle -->
+        <div class="view-toggle">
+          <button class="view-btn active" id="btnMonth" onclick="setView('month')">Month</button>
+          <button class="view-btn" id="btnWeek" onclick="setView('week')">Week</button>
+        </div>
       </div>
     </div>
-  </div>
 
+    <!-- Legend -->
+    <div class="legend-bar">
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:var(--outlook-light);border-left:3px solid var(--outlook);"></div>
+        Outlook events
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:var(--accent-light);border-left:3px solid var(--accent);"></div>
+        New experiment events
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#fff0ed;border-left:3px solid #b5451b;"></div>
+        Conflict
+      </div>
+    </div>
+
+    <div id="calBody"></div>
+
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
+// ══════════════════════════════════════════════
+// SHARED STATE
+// ══════════════════════════════════════════════
 var defaultEvents = [
   { name: "Tagging",           offset: 0,  time: "08:00", duration: 60,  active: true },
   { name: "Sampling",          offset: 7,  time: "08:00", duration: 90,  active: true },
@@ -484,22 +933,52 @@ var defaultEvents = [
 
 var events = JSON.parse(JSON.stringify(defaultEvents));
 var generatedFiles = [];
+var outlookEvents = []; // loaded from CSV
 
 var DURATIONS   = [30, 60, 90, 120, 180, 240, 360, 480];
 var DUR_LABELS  = ["30 min","1 hr","1.5 hr","2 hr","3 hr","4 hr","6 hr","8 hr"];
 var MONTHS_LONG = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 var DAYS_SHORT  = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+var DAYS_LONG   = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+// Calendar state
+var calView = 'month';
+var calDate = new Date();
 
 function pad(n) { return n < 10 ? '0'+n : ''+n; }
 
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'calendar') renderCalView();
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
 function init() {
   var today = new Date();
   document.getElementById('startDate').value =
     today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
-  renderEvents();
-  renderCalendar();
+  renderEventsTable();
+  renderMiniCal();
   document.getElementById('startDate').addEventListener('change', function() {
-    renderEvents(); renderCalendar();
+    renderEventsTable(); renderMiniCal();
+  });
+
+  // Drag and drop on upload zone
+  var zone = document.getElementById('uploadZone');
+  zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', function() { zone.classList.remove('dragover'); });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault(); zone.classList.remove('dragover');
+    var file = e.dataTransfer.files[0];
+    if (file) parseCSVFile(file);
   });
 }
 
@@ -520,59 +999,41 @@ function formatDur(mins) {
   return Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
 }
 
-function toICSDate(d) {
-  return d.getFullYear().toString()
-    + pad(d.getMonth()+1)
-    + pad(d.getDate()) + 'T'
-    + pad(d.getHours())
-    + pad(d.getMinutes()) + '00';
+function sameDay(a, b) {
+  return a.getFullYear() === b.getFullYear() &&
+         a.getMonth()    === b.getMonth() &&
+         a.getDate()     === b.getDate();
 }
 
-function makeICS(ev, expName, location, notes, startDateStr) {
-  var base = addDays(startDateStr, ev.offset);
-  var tp = ev.time.split(':');
-  base.setHours(parseInt(tp[0]), parseInt(tp[1]), 0);
-  var endD = new Date(base.getTime() + ev.duration * 60000);
-  var now = toICSDate(new Date());
-
-  var summary = '[' + expName + '] ' + ev.name;
-  var desc = 'Experiment: ' + expName
-    + '\\nEvent: ' + ev.name
-    + '\\nDate: ' + formatDisplay(base)
-    + '\\nDuration: ' + formatDur(ev.duration);
-  if (location) desc += '\\nLocation: ' + location;
-  if (notes)    desc += '\\n\\nNotes:\\n' + notes.replace(/\n/g, '\\n');
-
-  var uid = Math.random().toString(36).substr(2,9) + '-' + Date.now() + '@hazera-exp';
-
-  var lines = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Hazera Experiment Calendar//EN',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    'BEGIN:VEVENT',
-    'UID:' + uid,
-    'DTSTAMP:' + now,
-    'DTSTART:' + toICSDate(base),
-    'DTEND:' + toICSDate(endD),
-    'SUMMARY:' + summary,
-    'DESCRIPTION:' + desc,
-  ];
-
-  if (location) lines.push('LOCATION:' + location);
-
-  lines.push('END:VEVENT');
-  lines.push('END:VCALENDAR');
-
-  return lines.join('\r\n');
+// ══════════════════════════════════════════════
+// GET NEW EXPERIMENT EVENTS AS DATE OBJECTS
+// ══════════════════════════════════════════════
+function getNewEvents() {
+  var startDate = document.getElementById('startDate').value;
+  if (!startDate) return [];
+  var expName = document.getElementById('expName').value.trim() || 'New Experiment';
+  var result = [];
+  events.forEach(function(ev) {
+    if (!ev.active) return;
+    var base = addDays(startDate, ev.offset);
+    var tp = ev.time.split(':');
+    var startD = new Date(base.getTime());
+    startD.setHours(parseInt(tp[0]), parseInt(tp[1]), 0, 0);
+    var endD = new Date(startD.getTime() + ev.duration * 60000);
+    result.push({
+      title: '[' + expName + '] ' + ev.name,
+      start: startD,
+      end: endD,
+      type: 'new'
+    });
+  });
+  return result;
 }
 
-function slugify(str) {
-  return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-}
-
-function renderEvents() {
+// ══════════════════════════════════════════════
+// BUILDER: EVENTS TABLE
+// ══════════════════════════════════════════════
+function renderEventsTable() {
   var tbody = document.getElementById('eventsBody');
   tbody.innerHTML = '';
   var startDate = document.getElementById('startDate').value;
@@ -585,42 +1046,36 @@ function renderEvents() {
       var tr = document.createElement('tr');
       if (!ev.active) tr.className = 'skipped-row';
 
-      // Toggle
       var tdT = document.createElement('td');
       var chk = document.createElement('input');
       chk.type = 'checkbox'; chk.className = 'toggle'; chk.checked = ev.active;
-      chk.onchange = function() { events[idx].active = this.checked; renderEvents(); renderCalendar(); };
+      chk.onchange = function() { events[idx].active = this.checked; renderEventsTable(); renderMiniCal(); };
       tdT.appendChild(chk); tr.appendChild(tdT);
 
-      // Name
       var tdN = document.createElement('td'); tdN.className = 'event-name-cell';
       var inpN = document.createElement('input'); inpN.type = 'text'; inpN.value = ev.name;
-      inpN.onchange = function() { events[idx].name = this.value; renderCalendar(); };
+      inpN.onchange = function() { events[idx].name = this.value; renderMiniCal(); };
       tdN.appendChild(inpN); tr.appendChild(tdN);
 
-      // Offset
       var tdO = document.createElement('td');
       var inpO = document.createElement('input');
       inpO.type = 'number'; inpO.min = 0; inpO.value = ev.offset;
-      inpO.onchange = function() { events[idx].offset = parseInt(this.value)||0; renderEvents(); renderCalendar(); };
+      inpO.onchange = function() { events[idx].offset = parseInt(this.value)||0; renderEventsTable(); renderMiniCal(); };
       tdO.appendChild(inpO); tr.appendChild(tdO);
 
-      // Date
       var tdD = document.createElement('td');
       tdD.className = 'computed-date';
       tdD.textContent = computed ? formatDisplay(computed) : '—';
       tr.appendChild(tdD);
 
-      // Time
       var tdTm = document.createElement('td');
       var inpTm = document.createElement('input');
-      inpTm.type = 'time'; inpTm.value = ev.time; inpTm.style.width = '95px';
+      inpTm.type = 'time'; inpTm.value = ev.time; inpTm.style.width = '90px';
       inpTm.onchange = function() { events[idx].time = this.value; };
       tdTm.appendChild(inpTm); tr.appendChild(tdTm);
 
-      // Duration
       var tdDr = document.createElement('td');
-      var sel = document.createElement('select'); sel.style.width = '88px';
+      var sel = document.createElement('select'); sel.style.width = '84px';
       for (var d = 0; d < DURATIONS.length; d++) {
         var opt = document.createElement('option');
         opt.value = DURATIONS[d]; opt.textContent = DUR_LABELS[d];
@@ -638,83 +1093,39 @@ function renderEvents() {
 function addCustomEvent() {
   var last = events.length > 0 ? events[events.length-1] : null;
   events.push({ name: "New Event", offset: last ? last.offset+14 : 0, time:"08:00", duration:60, active:true });
-  renderEvents(); renderCalendar();
+  renderEventsTable(); renderMiniCal();
 }
 
-function generateAll() {
+// ══════════════════════════════════════════════
+// BUILDER: MINI CALENDAR (right panel)
+// ══════════════════════════════════════════════
+function renderMiniCal() {
   var startDate = document.getElementById('startDate').value;
-  var expName   = document.getElementById('expName').value.trim() || 'Experiment';
-  var location  = document.getElementById('expLocation').value.trim();
-  var notes     = document.getElementById('expNotes').value.trim();
-
-  if (!startDate) { alert('Please set a start date.'); return; }
-
-  var active = events.filter(function(e){ return e.active; });
-  if (active.length === 0) { alert('No events enabled.'); return; }
-
-  generatedFiles = [];
-
-  active.forEach(function(ev) {
-    var ics = makeICS(ev, expName, location, notes, startDate);
-    var filename = slugify(expName) + '--' + slugify(ev.name) + '.ics';
-    generatedFiles.push({ filename: filename, ics: ics });
-  });
-
-  var firstDate = formatDisplay(addDays(startDate, active[0].offset));
-  var lastDate  = formatDisplay(addDays(startDate, active[active.length-1].offset));
-
-  document.getElementById('outputSummary').textContent =
-    active.length + ' events  ·  ' + firstDate + '  →  ' + lastDate;
-
-  document.getElementById('outputSection').className = 'output-section visible';
-  renderCalendar();
-  downloadZip();
-  document.getElementById('outputSection').scrollIntoView({ behavior:'smooth', block:'start' });
-}
-
-function downloadZip() {
-  if (generatedFiles.length === 0) { alert('Generate files first.'); return; }
-  var expName = document.getElementById('expName').value.trim() || 'experiment';
-  var zip = new JSZip();
-  generatedFiles.forEach(function(f) { zip.file(f.filename, f.ics); });
-  zip.generateAsync({ type:'blob' }).then(function(blob) {
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = slugify(expName) + '-meetings.zip';
-    a.click();
-  });
-}
-
-// ── MINI CALENDAR ──
-function renderCalendar() {
-  var startDate = document.getElementById('startDate').value;
-  var container = document.getElementById('calendarContainer');
+  var container = document.getElementById('miniCalContainer');
 
   if (!startDate) {
-    container.innerHTML = '<p class="hint">Set a start date to see the overview.</p>';
+    container.innerHTML = '<p class="hint">Set a start date to preview your events.</p>';
     return;
   }
 
-  var eventMap = {};
-  events.forEach(function(ev) {
-    if (!ev.active) return;
-    var d = addDays(startDate, ev.offset);
-    var key = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
-    if (!eventMap[key]) eventMap[key] = [];
-    eventMap[key].push(ev.name);
-  });
-
-  var active = events.filter(function(e){ return e.active; });
-  if (active.length === 0) {
+  var newEvs = getNewEvents();
+  if (newEvs.length === 0) {
     container.innerHTML = '<p class="hint">No active events.</p>';
     return;
   }
 
-  var offsets = active.map(function(e){ return e.offset; });
-  var firstD  = addDays(startDate, Math.min.apply(null, offsets));
-  var lastD   = addDays(startDate, Math.max.apply(null, offsets));
-  var today   = new Date(); today.setHours(0,0,0,0);
+  // Build map
+  var eventMap = {};
+  newEvs.forEach(function(ev) {
+    var key = ev.start.getFullYear() + '-' + ev.start.getMonth() + '-' + ev.start.getDate();
+    if (!eventMap[key]) eventMap[key] = [];
+    eventMap[key].push(ev.title.replace(/^\[.*?\]\s*/, ''));
+  });
+
+  var dates = newEvs.map(function(e){ return e.start; });
+  var firstD = dates.reduce(function(a,b){ return a<b?a:b; });
+  var lastD  = dates.reduce(function(a,b){ return a>b?a:b; });
+  var today  = new Date(); today.setHours(0,0,0,0);
 
   container.innerHTML = '';
 
@@ -723,7 +1134,6 @@ function renderCalendar() {
 
   while (cur <= endM) {
     var yr = cur.getFullYear(), mo = cur.getMonth();
-
     var monthDiv = document.createElement('div');
     monthDiv.className = 'mini-month';
 
@@ -743,9 +1153,8 @@ function renderCalendar() {
 
     var firstDay = new Date(yr, mo, 1).getDay();
     for (var b = 0; b < firstDay; b++) {
-      var blank = document.createElement('div');
-      blank.className = 'cal-day empty';
-      grid.appendChild(blank);
+      var bl = document.createElement('div'); bl.className = 'cal-day';
+      grid.appendChild(bl);
     }
 
     var daysInMo = new Date(yr, mo+1, 0).getDate();
@@ -755,28 +1164,15 @@ function renderCalendar() {
       dayEl.className = 'cal-day';
       dayEl.textContent = day;
 
-      var thisDate = new Date(yr, mo, day);
-      if (thisDate.getTime() === today.getTime()) dayEl.classList.add('today');
+      if (new Date(yr, mo, day).getTime() === today.getTime()) dayEl.classList.add('today');
 
       if (eventMap[key]) {
-        dayEl.classList.add('has-event');
+        dayEl.classList.add('has-new');
         var names = eventMap[key].join(' + ');
         (function(el, label) {
-          el.onmouseenter = function(e) {
-            var tt = document.getElementById('tooltip');
-            tt.textContent = label;
-            tt.style.display = 'block';
-            tt.style.left = (e.clientX + 14) + 'px';
-            tt.style.top  = (e.clientY - 32) + 'px';
-          };
-          el.onmousemove = function(e) {
-            var tt = document.getElementById('tooltip');
-            tt.style.left = (e.clientX + 14) + 'px';
-            tt.style.top  = (e.clientY - 32) + 'px';
-          };
-          el.onmouseleave = function() {
-            document.getElementById('tooltip').style.display = 'none';
-          };
+          el.onmouseenter = function(e) { showTip(label, e); };
+          el.onmousemove  = function(e) { moveTip(e); };
+          el.onmouseleave = hideTip;
         })(dayEl, names);
       }
 
@@ -790,13 +1186,507 @@ function renderCalendar() {
 
   var legend = document.createElement('div');
   legend.className = 'cal-legend';
-  legend.innerHTML = '&#9679; Green = experiment event<br>Hover to see event name';
+  legend.innerHTML = '<span class="legend-dot" style="background:var(--accent)"></span> New experiment event<br>Hover to see name';
   container.appendChild(legend);
 }
 
-document.addEventListener('scroll', function() {
+// ══════════════════════════════════════════════
+// ICS GENERATION
+// ══════════════════════════════════════════════
+function toICSDate(d) {
+  return d.getFullYear().toString()
+    + pad(d.getMonth()+1) + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + pad(d.getMinutes()) + '00';
+}
+
+function makeICS(ev, expName, location, notes, startDateStr) {
+  var base = addDays(startDateStr, ev.offset);
+  var tp = ev.time.split(':');
+  base.setHours(parseInt(tp[0]), parseInt(tp[1]), 0);
+  var endD = new Date(base.getTime() + ev.duration * 60000);
+  var now  = toICSDate(new Date());
+
+  var summary = '[' + expName + '] ' + ev.name;
+  var desc = 'Experiment: ' + expName
+    + '\\nEvent: ' + ev.name
+    + '\\nDate: ' + formatDisplay(base)
+    + '\\nDuration: ' + formatDur(ev.duration);
+  if (location) desc += '\\nLocation: ' + location;
+  if (notes)    desc += '\\n\\nNotes:\\n' + notes.replace(/\n/g,'\\n');
+
+  var uid = Math.random().toString(36).substr(2,9) + '-' + Date.now() + '@hazera-exp';
+
+  var lines = [
+    'BEGIN:VCALENDAR','VERSION:2.0',
+    'PRODID:-//Hazera Experiment Calendar//EN',
+    'CALSCALE:GREGORIAN','METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:' + uid,
+    'DTSTAMP:' + now,
+    'DTSTART:' + toICSDate(base),
+    'DTEND:' + toICSDate(endD),
+    'SUMMARY:' + summary,
+    'DESCRIPTION:' + desc,
+  ];
+
+  if (location) lines.push('LOCATION:' + location);
+  lines.push('END:VEVENT','END:VCALENDAR');
+  return lines.join('\r\n');
+}
+
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
+function generateAll() {
+  var startDate = document.getElementById('startDate').value;
+  var expName   = document.getElementById('expName').value.trim() || 'Experiment';
+  var location  = document.getElementById('expLocation').value.trim();
+  var notes     = document.getElementById('expNotes').value.trim();
+
+  if (!startDate) { alert('Please set a start date.'); return; }
+
+  var active = events.filter(function(e){ return e.active; });
+  if (active.length === 0) { alert('No events enabled.'); return; }
+
+  generatedFiles = [];
+  active.forEach(function(ev) {
+    var ics = makeICS(ev, expName, location, notes, startDate);
+    var filename = slugify(expName) + '--' + slugify(ev.name) + '.ics';
+    generatedFiles.push({ filename: filename, ics: ics });
+  });
+
+  var firstDate = formatDisplay(addDays(startDate, active[0].offset));
+  var lastDate  = formatDisplay(addDays(startDate, active[active.length-1].offset));
+  document.getElementById('outputSummary').textContent =
+    active.length + ' events  ·  ' + firstDate + '  →  ' + lastDate;
+
+  document.getElementById('outputSection').className = 'output-section visible';
+  downloadZip();
+  document.getElementById('outputSection').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function downloadZip() {
+  if (generatedFiles.length === 0) { alert('Generate files first.'); return; }
+  var expName = document.getElementById('expName').value.trim() || 'experiment';
+  var zip = new JSZip();
+  generatedFiles.forEach(function(f) { zip.file(f.filename, f.ics); });
+  zip.generateAsync({ type:'blob' }).then(function(blob) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = slugify(expName) + '-meetings.zip';
+    a.click();
+  });
+}
+
+// ══════════════════════════════════════════════
+// CSV LOADING
+// ══════════════════════════════════════════════
+function loadCSV(evt) {
+  var file = evt.target.files[0];
+  if (!file) return;
+  parseCSVFile(file);
+}
+
+function parseCSVFile(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var text = e.target.result;
+    outlookEvents = parseOutlookCSV(text);
+    var count = outlookEvents.length;
+    var countEl = document.getElementById('uploadCount');
+    countEl.textContent = count + ' events loaded';
+    countEl.style.display = 'inline';
+    document.querySelector('.upload-label').innerHTML = '<strong>' + file.name + '</strong>';
+    renderCalView();
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parseOutlookCSV(text) {
+  var lines = text.split(/\r?\n/);
+  if (lines.length < 2) return [];
+
+  // Parse header
+  var headers = parseCSVLine(lines[0]);
+  var result = [];
+
+  // Find key column indices — Outlook exports vary by language/version
+  function findCol(names) {
+    for (var i = 0; i < headers.length; i++) {
+      var h = headers[i].replace(/^"|"$/g,'').trim().toLowerCase();
+      for (var j = 0; j < names.length; j++) {
+        if (h.indexOf(names[j].toLowerCase()) !== -1) return i;
+      }
+    }
+    return -1;
+  }
+
+  var subjectCol   = findCol(['subject','title','summary']);
+  var startCol     = findCol(['start date','start time','startdate','start']);
+  var startTimeCol = findCol(['start time','starttime']);
+  var endCol       = findCol(['end date','end time','enddate','end']);
+  var endTimeCol   = findCol(['end time','endtime']);
+  var locationCol  = findCol(['location']);
+
+  for (var i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    var cols = parseCSVLine(lines[i]);
+    if (cols.length < 2) continue;
+
+    var subject  = subjectCol  >= 0 ? clean(cols[subjectCol])  : 'Event';
+    var startStr = startCol    >= 0 ? clean(cols[startCol])    : '';
+    var startTm  = startTimeCol >= 0 ? clean(cols[startTimeCol]) : '08:00';
+    var endStr   = endCol      >= 0 ? clean(cols[endCol])      : '';
+    var endTm    = endTimeCol  >= 0 ? clean(cols[endTimeCol])  : '09:00';
+    var location = locationCol >= 0 ? clean(cols[locationCol]) : '';
+
+    // Try to parse date
+    var startDate = parseOutlookDate(startStr, startTm);
+    var endDate   = parseOutlookDate(endStr.length > 0 ? endStr : startStr, endTm);
+
+    if (!startDate) continue;
+    if (!endDate || endDate <= startDate) endDate = new Date(startDate.getTime() + 3600000);
+
+    result.push({
+      title: subject,
+      start: startDate,
+      end: endDate,
+      location: location,
+      type: 'outlook'
+    });
+  }
+
+  return result;
+}
+
+function parseCSVLine(line) {
+  var result = [], cur = '', inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
+    else { cur += c; }
+  }
+  result.push(cur);
+  return result;
+}
+
+function clean(s) { return (s||'').replace(/^"|"$/g,'').trim(); }
+
+function parseOutlookDate(dateStr, timeStr) {
+  if (!dateStr) return null;
+  try {
+    // Try common formats: M/D/YYYY, DD/MM/YYYY, YYYY-MM-DD
+    var d = null;
+    var parts;
+
+    // ISO
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+      d = new Date(dateStr.substr(0,10));
+    }
+    // M/D/YYYY or MM/DD/YYYY (US)
+    else if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(dateStr)) {
+      parts = dateStr.split('/');
+      d = new Date(parseInt(parts[2]), parseInt(parts[0])-1, parseInt(parts[1]));
+    }
+    // D/M/YYYY (EU)
+    else if (/^\d{1,2}\.\d{1,2}\.\d{4}/.test(dateStr)) {
+      parts = dateStr.split('.');
+      d = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+    }
+    else {
+      d = new Date(dateStr);
+    }
+
+    if (!d || isNaN(d.getTime())) return null;
+
+    // Apply time
+    if (timeStr) {
+      var tp = timeStr.replace(/\s*(AM|PM)/i,'').split(':');
+      var hrs = parseInt(tp[0])||0;
+      var mins = parseInt(tp[1])||0;
+      if (/PM/i.test(timeStr) && hrs < 12) hrs += 12;
+      if (/AM/i.test(timeStr) && hrs === 12) hrs = 0;
+      d.setHours(hrs, mins, 0, 0);
+    }
+
+    return d;
+  } catch(e) { return null; }
+}
+
+// ══════════════════════════════════════════════
+// CALENDAR VIEW
+// ══════════════════════════════════════════════
+function setView(v) {
+  calView = v;
+  document.getElementById('btnMonth').className = 'view-btn' + (v==='month' ? ' active' : '');
+  document.getElementById('btnWeek').className  = 'view-btn' + (v==='week'  ? ' active' : '');
+  renderCalView();
+}
+
+function calNav(dir) {
+  if (calView === 'month') {
+    calDate.setMonth(calDate.getMonth() + dir);
+  } else {
+    calDate.setDate(calDate.getDate() + dir * 7);
+  }
+  renderCalView();
+}
+
+function goToday() {
+  calDate = new Date();
+  renderCalView();
+}
+
+function renderCalView() {
+  if (calView === 'month') renderMonthView();
+  else renderWeekView();
+}
+
+// Collect all events for the calendar
+function getAllCalEvents() {
+  var all = [];
+  outlookEvents.forEach(function(ev) { all.push(ev); });
+  getNewEvents().forEach(function(ev) { all.push(ev); });
+  return all;
+}
+
+function isConflict(ev, all) {
+  if (ev.type !== 'new') return false;
+  for (var i = 0; i < all.length; i++) {
+    var other = all[i];
+    if (other.type !== 'outlook') continue;
+    if (sameDay(ev.start, other.start)) {
+      // Overlap check
+      if (ev.start < other.end && ev.end > other.start) return true;
+    }
+  }
+  return false;
+}
+
+// ── MONTH VIEW ──
+function renderMonthView() {
+  var yr = calDate.getFullYear(), mo = calDate.getMonth();
+  document.getElementById('calTitle').textContent = MONTHS_LONG[mo] + ' ' + yr;
+
+  var all = getAllCalEvents();
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  // Build day event map
+  var dayMap = {};
+  all.forEach(function(ev) {
+    var key = ev.start.getFullYear() + '-' + ev.start.getMonth() + '-' + ev.start.getDate();
+    if (!dayMap[key]) dayMap[key] = [];
+    dayMap[key].push(ev);
+  });
+
+  var firstDay = new Date(yr, mo, 1).getDay();
+  var daysInMo = new Date(yr, mo+1, 0).getDate();
+  var daysInPrev = new Date(yr, mo, 0).getDate();
+
+  var html = '<div class="month-grid">';
+  html += '<div class="month-dow-row">';
+  DAYS_LONG.forEach(function(d) {
+    html += '<div class="month-dow">' + d.substr(0,3) + '</div>';
+  });
+  html += '</div><div class="month-days-grid">';
+
+  // Prev month filler
+  for (var b = 0; b < firstDay; b++) {
+    var pday = daysInPrev - firstDay + b + 1;
+    html += '<div class="month-cell other-month"><span class="month-day-num">' + pday + '</span></div>';
+  }
+
+  // Current month
+  for (var day = 1; day <= daysInMo; day++) {
+    var cellDate = new Date(yr, mo, day);
+    var isToday = cellDate.getTime() === today.getTime();
+    var key = yr + '-' + mo + '-' + day;
+    var cellEvs = dayMap[key] || [];
+
+    var cellClass = 'month-cell' + (isToday ? ' today-cell' : '');
+    html += '<div class="' + cellClass + '">';
+    html += '<span class="month-day-num">' + day + '</span>';
+
+    // Show up to 3 events, then +N more
+    var shown = Math.min(cellEvs.length, 3);
+    for (var ei = 0; ei < shown; ei++) {
+      var cev = cellEvs[ei];
+      var conflict = isConflict(cev, all);
+      var cls = conflict ? 'conflict-ev' : (cev.type === 'outlook' ? 'outlook-ev' : 'new-ev');
+      var timeStr = pad(cev.start.getHours()) + ':' + pad(cev.start.getMinutes());
+      var label = timeStr + ' ' + cev.title;
+      html += '<div class="month-event ' + cls + '" '
+        + 'onmouseenter="showTip(\'' + escTip(cev.title) + ' · ' + timeStr + (cev.location ? ' · ' + escTip(cev.location) : '') + '\', event)" '
+        + 'onmousemove="moveTip(event)" onmouseleave="hideTip()">'
+        + escHtml(label) + '</div>';
+    }
+    if (cellEvs.length > 3) {
+      html += '<div class="month-event" style="color:var(--muted);background:transparent;font-style:italic;">+' + (cellEvs.length-3) + ' more</div>';
+    }
+
+    html += '</div>';
+  }
+
+  // Next month filler
+  var totalCells = firstDay + daysInMo;
+  var remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (var nx = 1; nx <= remaining; nx++) {
+    html += '<div class="month-cell other-month"><span class="month-day-num">' + nx + '</span></div>';
+  }
+
+  html += '</div></div>';
+  document.getElementById('calBody').innerHTML = html;
+}
+
+// ── WEEK VIEW ──
+function renderWeekView() {
+  // Get start of week (Sunday)
+  var startOfWeek = new Date(calDate);
+  startOfWeek.setDate(calDate.getDate() - calDate.getDay());
+  startOfWeek.setHours(0,0,0,0);
+
+  var endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23,59,59,999);
+
+  // Title
+  var startMo = MONTHS_LONG[startOfWeek.getMonth()].substr(0,3);
+  var endMo   = MONTHS_LONG[endOfWeek.getMonth()].substr(0,3);
+  var titleStr = startMo === endMo
+    ? startMo + ' ' + startOfWeek.getDate() + '–' + endOfWeek.getDate() + ', ' + startOfWeek.getFullYear()
+    : startMo + ' ' + startOfWeek.getDate() + ' – ' + endMo + ' ' + endOfWeek.getDate() + ', ' + endOfWeek.getFullYear();
+  document.getElementById('calTitle').textContent = titleStr;
+
+  var today = new Date(); today.setHours(0,0,0,0);
+  var all = getAllCalEvents();
+
+  // Filter events for this week
+  var weekEvs = all.filter(function(ev) {
+    return ev.start >= startOfWeek && ev.start <= endOfWeek;
+  });
+
+  // Build per-day arrays
+  var dayEvs = [[], [], [], [], [], [], []];
+  weekEvs.forEach(function(ev) {
+    var dow = ev.start.getDay();
+    dayEvs[dow].push(ev);
+  });
+
+  // Hours to show: 6am - 20pm (14 hours)
+  var startHour = 6, endHour = 20;
+  var totalHours = endHour - startHour;
+  var slotH = 48; // px per hour
+
+  var html = '<div class="week-grid">';
+
+  // Header row
+  html += '<div class="week-header-row"><div class="week-header-cell"></div>';
+  for (var d = 0; d < 7; d++) {
+    var dayDate = new Date(startOfWeek);
+    dayDate.setDate(startOfWeek.getDate() + d);
+    var isToday = dayDate.getTime() === today.getTime();
+    html += '<div class="week-header-cell">';
+    html += '<div class="week-day-name">' + DAYS_SHORT[d] + '</div>';
+    html += '<div class="week-day-num' + (isToday ? ' today-num' : '') + '">' + dayDate.getDate() + '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Body
+  html += '<div class="week-body">';
+
+  // Time column
+  html += '<div class="week-time-col">';
+  for (var hr = startHour; hr < endHour; hr++) {
+    html += '<div class="week-time-slot">' + (hr < 10 ? '0'+hr : hr) + ':00</div>';
+  }
+  html += '</div>';
+
+  // Day columns
+  for (var d = 0; d < 7; d++) {
+    var dayDate2 = new Date(startOfWeek);
+    dayDate2.setDate(startOfWeek.getDate() + d);
+    var isToday2 = dayDate2.getTime() === today.getTime();
+    var colClass = 'week-day-col' + (isToday2 ? ' today-col' : '');
+
+    html += '<div class="' + colClass + '" style="height:' + (totalHours * slotH) + 'px;">';
+
+    // Hour slot lines
+    for (var hr2 = 0; hr2 < totalHours; hr2++) {
+      html += '<div class="week-slot"></div>';
+    }
+
+    // Events
+    dayEvs[d].forEach(function(ev) {
+      var conflict = isConflict(ev, all);
+      var cls = conflict ? 'conflict-ev' : (ev.type === 'outlook' ? 'outlook-ev' : 'new-ev');
+
+      var evHrStart = ev.start.getHours() + ev.start.getMinutes()/60;
+      var evHrEnd   = ev.end.getHours()   + ev.end.getMinutes()/60;
+
+      // Clamp to visible range
+      var topHr  = Math.max(evHrStart, startHour);
+      var botHr  = Math.min(evHrEnd,   endHour);
+      if (botHr <= topHr) return;
+
+      var top    = (topHr - startHour) * slotH;
+      var height = Math.max((botHr - topHr) * slotH, 18);
+
+      var timeStr = pad(ev.start.getHours()) + ':' + pad(ev.start.getMinutes())
+        + '–' + pad(ev.end.getHours()) + ':' + pad(ev.end.getMinutes());
+
+      html += '<div class="week-event ' + cls + '" style="top:' + top + 'px;height:' + height + 'px;" '
+        + 'onmouseenter="showTip(\'' + escTip(ev.title) + '\\n' + timeStr + (ev.location ? '\\n' + escTip(ev.location) : '') + '\', event)" '
+        + 'onmousemove="moveTip(event)" onmouseleave="hideTip()">'
+        + '<strong>' + escHtml(ev.title) + '</strong><br>' + timeStr
+        + '</div>';
+    });
+
+    html += '</div>';
+  }
+
+  html += '</div></div>';
+
+  // Check if any events this week
+  if (weekEvs.length === 0 && outlookEvents.length === 0 && getNewEvents().length === 0) {
+    html += '<div class="no-events-msg">No events this week. Upload an Outlook CSV or build experiment events in the Schedule Builder tab.</div>';
+  }
+
+  document.getElementById('calBody').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════
+// TOOLTIP
+// ══════════════════════════════════════════════
+function showTip(text, e) {
+  var tt = document.getElementById('tooltip');
+  tt.innerHTML = text.replace(/\n/g,'<br>');
+  tt.style.display = 'block';
+  tt.style.left = (e.clientX + 14) + 'px';
+  tt.style.top  = (e.clientY - 36) + 'px';
+}
+
+function moveTip(e) {
+  var tt = document.getElementById('tooltip');
+  tt.style.left = (e.clientX + 14) + 'px';
+  tt.style.top  = (e.clientY - 36) + 'px';
+}
+
+function hideTip() {
   document.getElementById('tooltip').style.display = 'none';
-});
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function escTip(s) {
+  return (s||'').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+}
+
+document.addEventListener('scroll', hideTip);
 
 init();
 </script>
