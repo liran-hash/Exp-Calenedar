@@ -16,6 +16,7 @@
     --accent: #2d6a4f;
     --accent-light: #e8f5ef;
     --accent2: #b5451b;
+    --outlook: #0078d4;
     --mono: 'DM Mono', monospace;
     --serif: 'Instrument Serif', serif;
     --sans: 'DM Sans', sans-serif;
@@ -131,6 +132,7 @@
 
   textarea { resize: vertical; min-height: 56px; }
 
+  /* Events table */
   .events-table { width: 100%; border-collapse: collapse; }
 
   .events-table th {
@@ -197,6 +199,7 @@
   .toggle:checked::after { left: 18px; }
   .skipped-row td { opacity: 0.35; }
 
+  /* Participants */
   .participant-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
 
   .participant-tag {
@@ -223,6 +226,7 @@
   .add-row { display: flex; gap: 8px; align-items: center; }
   .add-row input { flex: 1; }
 
+  /* Buttons */
   .btn {
     padding: 9px 18px;
     border-radius: 5px;
@@ -255,7 +259,7 @@
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 7px;
-    padding: 12px 14px;
+    padding: 13px 16px;
     margin-bottom: 9px;
     display: flex;
     align-items: center;
@@ -264,31 +268,44 @@
   }
 
   .invite-info { flex: 1; min-width: 0; }
-
   .invite-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
-
-  .invite-meta {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--muted);
-  }
+  .invite-meta { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
 
   .invite-btn {
-    background: #0078d4;
+    background: var(--outlook);
     color: white;
-    padding: 8px 14px;
+    padding: 9px 16px;
     border-radius: 5px;
     text-decoration: none;
     font-family: var(--sans);
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 600;
     white-space: nowrap;
     flex-shrink: 0;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     transition: background 0.15s;
+    cursor: pointer;
+    border: none;
   }
 
   .invite-btn:hover { background: #006bb5; }
+
+  .invite-btn svg {
+    width: 15px; height: 15px; flex-shrink: 0;
+  }
+
+  .output-note {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: #6d5c00;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
 
   /* Calendar */
   .calendar-section {
@@ -396,13 +413,14 @@
 
 <header>
   <h1>Experiment Calendar</h1>
-  <span>Outlook Invitation Generator</span>
+  <span>Outlook Meeting Invitation Generator</span>
 </header>
 
 <div class="main-layout">
 
   <div class="left-col">
 
+    <!-- Experiment Details -->
     <div class="section">
       <div class="section-title">Experiment Details</div>
       <div class="field-row">
@@ -433,6 +451,7 @@
       </div>
     </div>
 
+    <!-- Events -->
     <div class="section">
       <div class="section-title">Events Schedule</div>
       <table class="events-table">
@@ -453,6 +472,7 @@
       </div>
     </div>
 
+    <!-- Participants -->
     <div class="section">
       <div class="section-title">Participants</div>
       <div id="participantList" class="participant-list"></div>
@@ -461,31 +481,38 @@
           onkeydown="if(event.key==='Enter'){addParticipant();event.preventDefault();}" />
         <button class="btn btn-sm btn-primary" onclick="addParticipant()">Add</button>
       </div>
-      <p class="hint">All participants will be added to every enabled event invitation.</p>
+      <p class="hint">Added to every enabled meeting invitation.</p>
     </div>
 
+    <!-- Organizer -->
     <div class="section">
       <div class="section-title">Organizer</div>
       <div class="field-row">
         <div>
-          <label>Your Name</label>
+          <label>Name</label>
           <input type="text" id="orgName" placeholder="e.g. Liran Yadgary" />
         </div>
         <div>
-          <label>Your Work Email</label>
+          <label>Work Email (@hazera.com)</label>
           <input type="email" id="orgEmail" placeholder="liran@hazera.com" />
         </div>
       </div>
     </div>
 
     <div class="generate-bar">
-      <span class="hint">One Outlook draft per event</span>
+      <span class="hint">Opens each event as a meeting in Outlook Web</span>
       <button class="btn btn-primary" onclick="generateAll()">Generate Invitations</button>
     </div>
 
+    <!-- Output -->
     <div class="output-section" id="outputSection">
-      <div class="section" style="margin-top:16px; padding-bottom:14px;">
-        <div class="section-title">Send Invitations — click each button to open in Outlook</div>
+      <div class="section" style="margin-top:16px;">
+        <div class="section-title">Meeting Invitations — click each to open in Outlook</div>
+        <div class="output-note">
+          &#128274; Make sure your assistant is <strong>already logged in</strong> to
+          <strong>outlook.office.com</strong> before clicking.
+          Each button opens a pre-filled meeting invitation — she just adds attendees and clicks Send.
+        </div>
         <div id="inviteCards"></div>
       </div>
     </div>
@@ -517,10 +544,10 @@ var defaultEvents = [
 var events = JSON.parse(JSON.stringify(defaultEvents));
 var participants = [];
 
-var DURATIONS     = [30, 60, 90, 120, 180, 240, 360, 480];
-var DUR_LABELS    = ["30 min","1 hr","1.5 hr","2 hr","3 hr","4 hr","6 hr","8 hr"];
-var MONTHS_LONG   = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-var DAYS_SHORT    = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+var DURATIONS   = [30, 60, 90, 120, 180, 240, 360, 480];
+var DUR_LABELS  = ["30 min","1 hr","1.5 hr","2 hr","3 hr","4 hr","6 hr","8 hr"];
+var MONTHS_LONG = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var DAYS_SHORT  = ["Su","Mo","Tu","We","Th","Fr","Sa"];
 
 function pad(n) { return n < 10 ? '0'+n : ''+n; }
 
@@ -531,8 +558,7 @@ function init() {
   renderEvents();
   renderCalendar();
   document.getElementById('startDate').addEventListener('change', function() {
-    renderEvents();
-    renderCalendar();
+    renderEvents(); renderCalendar();
   });
 }
 
@@ -553,6 +579,43 @@ function formatDur(mins) {
   return Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
 }
 
+// Format date for Outlook deep link: YYYY-MM-DDTHH:MM:SS
+function formatOWADate(d) {
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':00';
+}
+
+function makeOWALink(ev, expName, location, notes, startDateStr) {
+  var base = addDays(startDateStr, ev.offset);
+  var tp = ev.time.split(':');
+  base.setHours(parseInt(tp[0]), parseInt(tp[1]), 0);
+  var endD = new Date(base.getTime() + ev.duration * 60000);
+
+  var subject  = '[' + expName + '] ' + ev.name;
+  var bodyText = 'Experiment: ' + expName + '\n'
+    + 'Event: ' + ev.name + '\n'
+    + 'Date: ' + formatDisplay(base) + '\n'
+    + 'Duration: ' + formatDur(ev.duration) + '\n';
+  if (location) bodyText += 'Location: ' + location + '\n';
+  if (notes)    bodyText += '\nNotes:\n' + notes + '\n';
+
+  var attendees = participants.join(';');
+
+  var url = 'https://outlook.office.com/calendar/0/deeplink/compose'
+    + '?subject='    + encodeURIComponent(subject)
+    + '&startdt='   + encodeURIComponent(formatOWADate(base))
+    + '&enddt='     + encodeURIComponent(formatOWADate(endD))
+    + '&body='      + encodeURIComponent(bodyText)
+    + '&path=/calendar/action/compose'
+    + '&rru=addevent';
+
+  if (location)  url += '&location=' + encodeURIComponent(location);
+  if (attendees) url += '&to='       + encodeURIComponent(attendees);
+
+  return url;
+}
+
+// ── RENDER EVENTS TABLE ──
 function renderEvents() {
   var tbody = document.getElementById('eventsBody');
   tbody.innerHTML = '';
@@ -570,10 +633,7 @@ function renderEvents() {
       var tdT = document.createElement('td');
       var chk = document.createElement('input');
       chk.type = 'checkbox'; chk.className = 'toggle'; chk.checked = ev.active;
-      chk.onchange = function() {
-        events[idx].active = this.checked;
-        renderEvents(); renderCalendar();
-      };
+      chk.onchange = function() { events[idx].active = this.checked; renderEvents(); renderCalendar(); };
       tdT.appendChild(chk); tr.appendChild(tdT);
 
       // Name
@@ -586,10 +646,7 @@ function renderEvents() {
       var tdO = document.createElement('td');
       var inpO = document.createElement('input');
       inpO.type = 'number'; inpO.min = 0; inpO.value = ev.offset;
-      inpO.onchange = function() {
-        events[idx].offset = parseInt(this.value)||0;
-        renderEvents(); renderCalendar();
-      };
+      inpO.onchange = function() { events[idx].offset = parseInt(this.value)||0; renderEvents(); renderCalendar(); };
       tdO.appendChild(inpO); tr.appendChild(tdO);
 
       // Date
@@ -628,6 +685,7 @@ function addCustomEvent() {
   renderEvents(); renderCalendar();
 }
 
+// ── PARTICIPANTS ──
 function addParticipant() {
   var inp = document.getElementById('participantInput');
   var email = inp.value.trim();
@@ -653,39 +711,12 @@ function renderParticipants() {
   });
 }
 
-function makeMailto(ev, expName, location, notes, orgName, orgEmail, startDateStr) {
-  var base = addDays(startDateStr, ev.offset);
-  var tp = ev.time.split(':');
-  base.setHours(parseInt(tp[0]), parseInt(tp[1]), 0);
-  var endD = new Date(base.getTime() + ev.duration * 60000);
-  var endTime = pad(endD.getHours()) + ':' + pad(endD.getMinutes());
-
-  var subject = '[' + expName + '] ' + ev.name + ' — ' + formatDisplay(base);
-
-  var body = 'You are invited to the following experiment event:\n\n';
-  body += 'Event:      ' + ev.name + '\n';
-  body += 'Experiment: ' + expName + '\n';
-  body += 'Date:       ' + formatDisplay(base) + '\n';
-  body += 'Time:       ' + ev.time + ' \u2013 ' + endTime + '\n';
-  if (location) body += 'Location:   ' + location + '\n';
-  body += 'Duration:   ' + formatDur(ev.duration) + '\n';
-  if (orgName || orgEmail) body += 'Organizer:  ' + (orgName||'') + (orgEmail ? ' <' + orgEmail + '>' : '') + '\n';
-  if (notes) body += '\nNotes:\n' + notes + '\n';
-  body += '\nPlease confirm your attendance.\n';
-
-  var to = participants.join(';');
-  return 'mailto:' + encodeURIComponent(to)
-    + '?subject=' + encodeURIComponent(subject)
-    + '&body=' + encodeURIComponent(body);
-}
-
+// ── GENERATE ──
 function generateAll() {
   var startDate = document.getElementById('startDate').value;
   var expName   = document.getElementById('expName').value.trim() || 'Experiment';
   var location  = document.getElementById('expLocation').value.trim();
   var notes     = document.getElementById('expNotes').value.trim();
-  var orgName   = document.getElementById('orgName').value.trim();
-  var orgEmail  = document.getElementById('orgEmail').value.trim();
 
   if (!startDate) { alert('Please set a start date.'); return; }
 
@@ -696,7 +727,7 @@ function generateAll() {
   cards.innerHTML = '';
 
   active.forEach(function(ev) {
-    var mailto = makeMailto(ev, expName, location, notes, orgName, orgEmail, startDate);
+    var owaUrl = makeOWALink(ev, expName, location, notes, startDate);
     var base = addDays(startDate, ev.offset);
     var tp = ev.time.split(':');
     var startD = new Date(base.getTime());
@@ -723,8 +754,11 @@ function generateAll() {
 
     var btn = document.createElement('a');
     btn.className = 'invite-btn';
-    btn.href = mailto;
-    btn.textContent = '✉ Open in Outlook';
+    btn.href = owaUrl;
+    btn.target = '_blank';
+    btn.rel = 'noopener';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3a4 4 0 110 8 4 4 0 010-8zm6 13H6v-.5c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"/></svg>'
+      + 'Open Meeting';
 
     card.appendChild(info);
     card.appendChild(btn);
@@ -768,8 +802,8 @@ function renderCalendar() {
 
   container.innerHTML = '';
 
-  var cur = new Date(firstD.getFullYear(), firstD.getMonth(), 1);
-  var endM = new Date(lastD.getFullYear(), lastD.getMonth(), 1);
+  var cur  = new Date(firstD.getFullYear(), firstD.getMonth(), 1);
+  var endM = new Date(lastD.getFullYear(),  lastD.getMonth(),  1);
 
   while (cur <= endM) {
     var yr = cur.getFullYear(), mo = cur.getMonth();
@@ -840,7 +874,7 @@ function renderCalendar() {
 
   var legend = document.createElement('div');
   legend.className = 'cal-legend';
-  legend.innerHTML = '&#9679; Green circle = experiment event<br>Hover to see event name';
+  legend.innerHTML = '&#9679; Green = experiment event<br>Hover to see event name';
   container.appendChild(legend);
 }
 
