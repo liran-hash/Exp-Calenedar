@@ -15,8 +15,6 @@
     --muted: #7a7468;
     --accent: #2d6a4f;
     --accent-light: #e8f5ef;
-    --accent2: #b5451b;
-    --outlook: #0078d4;
     --mono: 'DM Mono', monospace;
     --serif: 'Instrument Serif', serif;
     --sans: 'DM Sans', sans-serif;
@@ -199,33 +197,6 @@
   .toggle:checked::after { left: 18px; }
   .skipped-row td { opacity: 0.35; }
 
-  /* Participants */
-  .participant-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
-
-  .participant-tag {
-    background: var(--accent-light);
-    border: 1px solid #b7dbc9;
-    color: var(--accent);
-    font-size: 0.78rem;
-    padding: 3px 10px 3px 11px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-family: var(--mono);
-  }
-
-  .participant-tag button {
-    background: none; border: none;
-    color: var(--accent); cursor: pointer;
-    font-size: 1rem; line-height: 1; padding: 0; opacity: 0.55;
-  }
-
-  .participant-tag button:hover { opacity: 1; }
-
-  .add-row { display: flex; gap: 8px; align-items: center; }
-  .add-row input { flex: 1; }
-
   /* Buttons */
   .btn {
     padding: 9px 18px;
@@ -252,59 +223,58 @@
   .generate-bar .btn-primary { padding: 12px 30px; font-size: 0.92rem; }
 
   /* Output */
-  .output-section { display: none; margin-bottom: 16px; }
+  .output-section { display: none; margin-top: 16px; margin-bottom: 16px; }
   .output-section.visible { display: block; }
 
-  .invite-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 13px 16px;
-    margin-bottom: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+  .output-inner {
+    background: var(--accent);
+    border-radius: 8px;
+    padding: 24px 28px;
+    text-align: center;
+    color: white;
   }
 
-  .invite-info { flex: 1; min-width: 0; }
-  .invite-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
-  .invite-meta { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+  .output-inner .section-title {
+    color: rgba(255,255,255,0.6);
+    border-color: rgba(255,255,255,0.2);
+    text-align: left;
+  }
 
-  .invite-btn {
-    background: var(--outlook);
-    color: white;
-    padding: 9px 16px;
-    border-radius: 5px;
-    text-decoration: none;
+  .output-summary {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 20px;
+  }
+
+  .download-zip-btn {
+    background: white;
+    color: var(--accent);
+    padding: 14px 40px;
+    border-radius: 6px;
+    border: none;
     font-family: var(--sans);
-    font-size: 0.8rem;
-    font-weight: 600;
-    white-space: nowrap;
-    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    transition: background 0.15s;
-    cursor: pointer;
-    border: none;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transition: transform 0.1s, box-shadow 0.1s;
   }
 
-  .invite-btn:hover { background: #006bb5; }
-
-  .invite-btn svg {
-    width: 15px; height: 15px; flex-shrink: 0;
+  .download-zip-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   }
 
-  .output-note {
-    background: #fff8e1;
-    border: 1px solid #ffe082;
-    border-radius: 6px;
-    padding: 10px 14px;
-    font-size: 0.78rem;
-    color: #6d5c00;
-    margin-bottom: 14px;
-    line-height: 1.5;
+  .output-hint {
+    margin-top: 14px;
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.6);
+    font-style: italic;
+    line-height: 1.6;
   }
 
   /* Calendar */
@@ -348,12 +318,11 @@
     font-size: 0.7rem;
     text-align: center;
     padding: 3px 1px;
-    border-radius: 3px;
     min-height: 20px;
     line-height: 1.5;
   }
 
-  .cal-day.today { font-weight: 700; color: var(--accent2); }
+  .cal-day.today { font-weight: 700; color: #b5451b; }
 
   .cal-day.has-event {
     background: var(--accent);
@@ -413,14 +382,13 @@
 
 <header>
   <h1>Experiment Calendar</h1>
-  <span>Outlook Meeting Invitation Generator</span>
+  <span>Outlook Meeting Generator</span>
 </header>
 
 <div class="main-layout">
 
   <div class="left-col">
 
-    <!-- Experiment Details -->
     <div class="section">
       <div class="section-title">Experiment Details</div>
       <div class="field-row">
@@ -445,13 +413,12 @@
       </div>
       <div class="field-row single">
         <div>
-          <label>Notes (added to all invitations)</label>
+          <label>Notes (added to all events)</label>
           <textarea id="expNotes" placeholder="Optional: protocol, instructions, links..."></textarea>
         </div>
       </div>
     </div>
 
-    <!-- Events -->
     <div class="section">
       <div class="section-title">Events Schedule</div>
       <table class="events-table">
@@ -472,48 +439,20 @@
       </div>
     </div>
 
-    <!-- Participants -->
-    <div class="section">
-      <div class="section-title">Participants</div>
-      <div id="participantList" class="participant-list"></div>
-      <div class="add-row">
-        <input type="email" id="participantInput" placeholder="colleague@hazera.com"
-          onkeydown="if(event.key==='Enter'){addParticipant();event.preventDefault();}" />
-        <button class="btn btn-sm btn-primary" onclick="addParticipant()">Add</button>
-      </div>
-      <p class="hint">Added to every enabled meeting invitation.</p>
-    </div>
-
-    <!-- Organizer -->
-    <div class="section">
-      <div class="section-title">Organizer</div>
-      <div class="field-row">
-        <div>
-          <label>Name</label>
-          <input type="text" id="orgName" placeholder="e.g. Liran Yadgary" />
-        </div>
-        <div>
-          <label>Work Email (@hazera.com)</label>
-          <input type="email" id="orgEmail" placeholder="liran@hazera.com" />
-        </div>
-      </div>
-    </div>
-
     <div class="generate-bar">
-      <span class="hint">Opens each event as a meeting in Outlook Web</span>
-      <button class="btn btn-primary" onclick="generateAll()">Generate Invitations</button>
+      <span class="hint">Download ZIP → double-click each .ics → add participants → Send</span>
+      <button class="btn btn-primary" onclick="generateAll()">Generate ICS Files</button>
     </div>
 
-    <!-- Output -->
     <div class="output-section" id="outputSection">
-      <div class="section" style="margin-top:16px;">
-        <div class="section-title">Meeting Invitations — click each to open in Outlook</div>
-        <div class="output-note">
-          &#128274; Make sure your assistant is <strong>already logged in</strong> to
-          <strong>outlook.office.com</strong> before clicking.
-          Each button opens a pre-filled meeting invitation — she just adds attendees and clicks Send.
+      <div class="output-inner">
+        <div class="section-title">Ready</div>
+        <div class="output-summary" id="outputSummary"></div>
+        <button class="download-zip-btn" onclick="downloadZip()">⬇ Download ZIP</button>
+        <div class="output-hint">
+          Extract the ZIP · Double-click each .ics to open in Outlook desktop<br>
+          Add participants · Review · Click Send
         </div>
-        <div id="inviteCards"></div>
       </div>
     </div>
 
@@ -531,6 +470,8 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <script>
 var defaultEvents = [
   { name: "Tagging",           offset: 0,  time: "08:00", duration: 60,  active: true },
@@ -542,7 +483,7 @@ var defaultEvents = [
 ];
 
 var events = JSON.parse(JSON.stringify(defaultEvents));
-var participants = [];
+var generatedFiles = [];
 
 var DURATIONS   = [30, 60, 90, 120, 180, 240, 360, 480];
 var DUR_LABELS  = ["30 min","1 hr","1.5 hr","2 hr","3 hr","4 hr","6 hr","8 hr"];
@@ -579,43 +520,58 @@ function formatDur(mins) {
   return Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
 }
 
-// Format date for Outlook deep link: YYYY-MM-DDTHH:MM:SS
-function formatOWADate(d) {
-  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
-    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':00';
+function toICSDate(d) {
+  return d.getFullYear().toString()
+    + pad(d.getMonth()+1)
+    + pad(d.getDate()) + 'T'
+    + pad(d.getHours())
+    + pad(d.getMinutes()) + '00';
 }
 
-function makeOWALink(ev, expName, location, notes, startDateStr) {
+function makeICS(ev, expName, location, notes, startDateStr) {
   var base = addDays(startDateStr, ev.offset);
   var tp = ev.time.split(':');
   base.setHours(parseInt(tp[0]), parseInt(tp[1]), 0);
   var endD = new Date(base.getTime() + ev.duration * 60000);
+  var now = toICSDate(new Date());
 
-  var subject  = '[' + expName + '] ' + ev.name;
-  var bodyText = 'Experiment: ' + expName + '\n'
-    + 'Event: ' + ev.name + '\n'
-    + 'Date: ' + formatDisplay(base) + '\n'
-    + 'Duration: ' + formatDur(ev.duration) + '\n';
-  if (location) bodyText += 'Location: ' + location + '\n';
-  if (notes)    bodyText += '\nNotes:\n' + notes + '\n';
+  var summary = '[' + expName + '] ' + ev.name;
+  var desc = 'Experiment: ' + expName
+    + '\\nEvent: ' + ev.name
+    + '\\nDate: ' + formatDisplay(base)
+    + '\\nDuration: ' + formatDur(ev.duration);
+  if (location) desc += '\\nLocation: ' + location;
+  if (notes)    desc += '\\n\\nNotes:\\n' + notes.replace(/\n/g, '\\n');
 
-  var attendees = participants.join(';');
+  var uid = Math.random().toString(36).substr(2,9) + '-' + Date.now() + '@hazera-exp';
 
-  var url = 'https://outlook.office.com/calendar/0/deeplink/compose'
-    + '?subject='    + encodeURIComponent(subject)
-    + '&startdt='   + encodeURIComponent(formatOWADate(base))
-    + '&enddt='     + encodeURIComponent(formatOWADate(endD))
-    + '&body='      + encodeURIComponent(bodyText)
-    + '&path=/calendar/action/compose'
-    + '&rru=addevent';
+  var lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Hazera Experiment Calendar//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:' + uid,
+    'DTSTAMP:' + now,
+    'DTSTART:' + toICSDate(base),
+    'DTEND:' + toICSDate(endD),
+    'SUMMARY:' + summary,
+    'DESCRIPTION:' + desc,
+  ];
 
-  if (location)  url += '&location=' + encodeURIComponent(location);
-  if (attendees) url += '&to='       + encodeURIComponent(attendees);
+  if (location) lines.push('LOCATION:' + location);
 
-  return url;
+  lines.push('END:VEVENT');
+  lines.push('END:VCALENDAR');
+
+  return lines.join('\r\n');
 }
 
-// ── RENDER EVENTS TABLE ──
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
 function renderEvents() {
   var tbody = document.getElementById('eventsBody');
   tbody.innerHTML = '';
@@ -685,33 +641,6 @@ function addCustomEvent() {
   renderEvents(); renderCalendar();
 }
 
-// ── PARTICIPANTS ──
-function addParticipant() {
-  var inp = document.getElementById('participantInput');
-  var email = inp.value.trim();
-  if (!email || participants.indexOf(email) !== -1) { inp.value=''; return; }
-  participants.push(email);
-  inp.value = '';
-  renderParticipants();
-}
-
-function removeParticipant(idx) {
-  participants.splice(idx, 1);
-  renderParticipants();
-}
-
-function renderParticipants() {
-  var list = document.getElementById('participantList');
-  list.innerHTML = '';
-  participants.forEach(function(email, i) {
-    var tag = document.createElement('div');
-    tag.className = 'participant-tag';
-    tag.innerHTML = email + '<button onclick="removeParticipant(' + i + ')">×</button>';
-    list.appendChild(tag);
-  });
-}
-
-// ── GENERATE ──
 function generateAll() {
   var startDate = document.getElementById('startDate').value;
   var expName   = document.getElementById('expName').value.trim() || 'Experiment';
@@ -723,51 +652,38 @@ function generateAll() {
   var active = events.filter(function(e){ return e.active; });
   if (active.length === 0) { alert('No events enabled.'); return; }
 
-  var cards = document.getElementById('inviteCards');
-  cards.innerHTML = '';
+  generatedFiles = [];
 
   active.forEach(function(ev) {
-    var owaUrl = makeOWALink(ev, expName, location, notes, startDate);
-    var base = addDays(startDate, ev.offset);
-    var tp = ev.time.split(':');
-    var startD = new Date(base.getTime());
-    startD.setHours(parseInt(tp[0]), parseInt(tp[1]), 0);
-    var endD = new Date(startD.getTime() + ev.duration * 60000);
-    var endTime = pad(endD.getHours()) + ':' + pad(endD.getMinutes());
-
-    var card = document.createElement('div');
-    card.className = 'invite-card';
-
-    var info = document.createElement('div');
-    info.className = 'invite-info';
-
-    var name = document.createElement('div');
-    name.className = 'invite-name';
-    name.textContent = ev.name;
-
-    var meta = document.createElement('div');
-    meta.className = 'invite-meta';
-    meta.textContent = formatDisplay(base) + '  ·  ' + ev.time + '–' + endTime + '  ·  ' + formatDur(ev.duration);
-
-    info.appendChild(name);
-    info.appendChild(meta);
-
-    var btn = document.createElement('a');
-    btn.className = 'invite-btn';
-    btn.href = owaUrl;
-    btn.target = '_blank';
-    btn.rel = 'noopener';
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3a4 4 0 110 8 4 4 0 010-8zm6 13H6v-.5c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"/></svg>'
-      + 'Open Meeting';
-
-    card.appendChild(info);
-    card.appendChild(btn);
-    cards.appendChild(card);
+    var ics = makeICS(ev, expName, location, notes, startDate);
+    var filename = slugify(expName) + '--' + slugify(ev.name) + '.ics';
+    generatedFiles.push({ filename: filename, ics: ics });
   });
+
+  var firstDate = formatDisplay(addDays(startDate, active[0].offset));
+  var lastDate  = formatDisplay(addDays(startDate, active[active.length-1].offset));
+
+  document.getElementById('outputSummary').textContent =
+    active.length + ' events  ·  ' + firstDate + '  →  ' + lastDate;
 
   document.getElementById('outputSection').className = 'output-section visible';
   renderCalendar();
+  downloadZip();
   document.getElementById('outputSection').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function downloadZip() {
+  if (generatedFiles.length === 0) { alert('Generate files first.'); return; }
+  var expName = document.getElementById('expName').value.trim() || 'experiment';
+  var zip = new JSZip();
+  generatedFiles.forEach(function(f) { zip.file(f.filename, f.ics); });
+  zip.generateAsync({ type:'blob' }).then(function(blob) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = slugify(expName) + '-meetings.zip';
+    a.click();
+  });
 }
 
 // ── MINI CALENDAR ──
@@ -796,9 +712,9 @@ function renderCalendar() {
   }
 
   var offsets = active.map(function(e){ return e.offset; });
-  var firstD = addDays(startDate, Math.min.apply(null, offsets));
-  var lastD  = addDays(startDate, Math.max.apply(null, offsets));
-  var today  = new Date(); today.setHours(0,0,0,0);
+  var firstD  = addDays(startDate, Math.min.apply(null, offsets));
+  var lastD   = addDays(startDate, Math.max.apply(null, offsets));
+  var today   = new Date(); today.setHours(0,0,0,0);
 
   container.innerHTML = '';
 
