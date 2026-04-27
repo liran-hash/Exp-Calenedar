@@ -1,1 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment Calendar Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #f5f2ec;
+    --surface: #ffffff;
+    --border: #d9d3c7;
+    --text: #1a1814;
+    --muted: #7a7468;
+    --accent: #2d6a4f;
+    --accent-light: #e8f5ef;
+    --accent2: #b5451b;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Instrument Serif', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  header {
+    background: var(--text);
+    color: var(--bg);
+    padding: 28px 40px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  header h1 {
+    font-family: var(--serif);
+    font-size: 1.9rem;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.5px;
+  }
+
+  header span {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: #a09a8e;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 36px 24px 0;
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .field-row.single { grid-template-columns: 1fr; }
+  .field-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  input[type="text"], input[type="date"], input[type="time"], input[type="email"], textarea, select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  textarea { resize: vertical; min-height: 60px; }
+
+  /* Events table */
+  .events-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .events-table th {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .events-table td {
+    padding: 6px 6px;
+    border-bottom: 1px solid #f0ede8;
+    vertical-align: middle;
+  }
+
+  .events-table tr:last-child td { border-bottom: none; }
+
+  .events-table input[type="text"],
+  .events-table input[type="number"],
+  .events-table input[type="time"] {
+    padding: 7px 10px;
+    font-size: 0.85rem;
+  }
+
+  .events-table input[type="number"] { width: 70px; }
+
+  .event-name-cell { min-width: 160px; }
+
+  .computed-date {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    white-space: nowrap;
+    padding: 0 8px;
+  }
+
+  .toggle-cell {
+    text-align: center;
+  }
+
+  /* Checkbox toggle */
+  .toggle {
+    appearance: none;
+    width: 36px;
+    height: 20px;
+    background: #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle:checked { background: var(--accent); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: left 0.2s;
+  }
+
+  .toggle:checked::after { left: 19px; }
+
+  /* Participants */
+  .participant-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+
+  .participant-tag {
+    background: var(--accent-light);
+    border: 1px solid #b7dbc9;
+    color: var(--accent);
+    font-size: 0.8rem;
+    padding: 4px 10px 4px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+  }
+
+  .participant-tag button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.6;
+  }
+
+  .participant-tag button:hover { opacity: 1; }
+
+  .add-participant-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .add-participant-row input { flex: 1; }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+
+  .btn-sm { padding: 7px 14px; font-size: 0.8rem; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #235c42; }
+
+  .btn-secondary {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--border); }
+
+  .btn-danger {
+    background: #fff0ed;
+    color: var(--accent2);
+    border: 1px solid #f0c0b0;
+  }
+  .btn-danger:hover { background: #ffe0d8; }
+
+  .generate-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  .generate-bar .btn-primary {
+    padding: 13px 32px;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+  }
+
+  /* Output */
+  .output-section {
+    display: none;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .output-section.visible { display: block; }
+
+  .output-section .section-title { color: #7a7468; border-color: #333; }
+
+  .download-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .download-card {
+    background: #2a2620;
+    border: 1px solid #3a3630;
+    border-radius: 6px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .download-card .ev-name {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #f0ede8;
+  }
+
+  .download-card .ev-date {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+  }
+
+  .download-card .ev-skip {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: #b5451b;
+    font-style: italic;
+  }
+
+  .download-card a {
+    margin-top: 6px;
+    padding: 7px 14px;
+    background: var(--accent);
+    color: white;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: var(--mono);
+    letter-spacing: 0.5px;
+  }
+
+  .download-card a:hover { background: #235c42; }
+
+  .download-all-btn {
+    margin-top: 16px;
+    background: #f5f2ec;
+    color: #1a1814;
+    padding: 11px 24px;
+    border-radius: 5px;
+    border: none;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .download-all-btn:hover { background: white; }
+
+  .hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  .skipped-row td { opacity: 0.4; }
+
+  .duration-select { width: 100%; }
+
+  @media (max-width: 600px) {
+    header { padding: 20px; }
+    .container { padding: 20px 12px 0; }
+    .field-row { grid-template-columns: 1fr; }
+    .field-row.triple { grid-template-columns: 1fr 1fr; }
+    .section { padding: 18px; }
+    header h1 { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Experiment Calendar</h1>
+  <span>ICS Invitation Generator</span>
+</header>
+
+<div class="container">
+
+  <!-- Experiment Info -->
+  <div class="section">
+    <div class="section-title">Experiment Details</div>
+    <div class="field-row">
+      <div>
+        <label>Experiment Name</label>
+        <input type="text" id="expName" placeholder="e.g. Tomato Trial 2026 — Block A" />
+      </div>
+      <div>
+        <label>Location / Greenhouse</label>
+        <input type="text" id="expLocation" placeholder="e.g. GH-3, Breeding Station" />
+      </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <label>Start Date (Day 0)</label>
+        <input type="date" id="startDate" />
+      </div>
+      <div>
+        <label>Default Event Time</label>
+        <input type="time" id="defaultTime" value="08:00" />
+      </div>
+    </div>
+    <div class="field-row single">
+      <div>
+        <label>Notes / Description (added to all events)</label>
+        <textarea id="expNotes" placeholder="Optional: breeding protocol, instructions, links..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events -->
+  <div class="section">
+    <div class="section-title">Events Schedule</div>
+    <p class="hint" style="margin-bottom:14px;">Toggle events on/off. Adjust day offsets from Day 0 (start date). Each row shows the computed calendar date.</p>
+    <table class="events-table" id="eventsTable">
+      <thead>
+        <tr>
+          <th>On</th>
+          <th>Event Name</th>
+          <th>Day Offset</th>
+          <th>Computed Date</th>
+          <th>Time</th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody id="eventsBody">
+      </tbody>
+    </table>
+    <div style="margin-top:14px; display:flex; gap:10px;">
+      <button class="btn btn-sm btn-secondary" onclick="addCustomEvent()">+ Add Custom Event</button>
+    </div>
+  </div>
+
+  <!-- Participants -->
+  <div class="section">
+    <div class="section-title">Participants (All Events)</div>
+    <div id="participantList" class="participant-list"></div>
+    <div class="add-participant-row">
+      <input type="email" id="participantInput" placeholder="colleague@hazera.com" onkeydown="if(event.key==='Enter'){addParticipant();event.preventDefault();}" />
+      <button class="btn btn-sm btn-primary" onclick="addParticipant()">Add</button>
+    </div>
+    <p class="hint">Press Enter or click Add. Each person will appear as an attendee on all enabled events.</p>
+  </div>
+
+  <!-- Organizer -->
+  <div class="section">
+    <div class="section-title">Organizer</div>
+    <div class="field-row">
+      <div>
+        <label>Your Name</label>
+        <input type="text" id="orgName" placeholder="e.g. Liran Cohen" />
+      </div>
+      <div>
+        <label>Your Email</label>
+        <input type="email" id="orgEmail" placeholder="liran@hazera.com" />
+      </div>
+    </div>
+  </div>
+
+  <div class="generate-bar">
+    <span class="hint">Each event downloads as a separate .ics file</span>
+    <button class="btn btn-primary" onclick="generateAll()">Generate ICS Files</button>
+  </div>
+
+  <!-- Output -->
+  <div class="output-section" id="outputSection">
+    <div class="section-title">Generated Files</div>
+    <p style="font-size:0.82rem; color:#a09a8e; margin-bottom:4px;">
+      Double-click each .ics to open in Outlook and send invitations, or use "Download All" to get a ZIP.
+    </p>
+    <div class="download-grid" id="downloadGrid"></div>
+    <div style="margin-top:16px;">
+      <button class="download-all-btn" onclick="downloadZip()">⬇ Download All as ZIP</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- JSZip for ZIP download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+// Default events: name, default day offset
+var defaultEvents = [
+  { name: "Tagging",             offset: 0,   time: "08:00", duration: 60,  active: true },
+  { name: "Sampling",            offset: 7,   time: "08:00", duration: 90,  active: true },
+  { name: "Nursery Selection",   offset: 21,  time: "08:00", duration: 120, active: true },
+  { name: "Planting",            offset: 35,  time: "07:00", duration: 180, active: true },
+  { name: "First Evaluation",    offset: 56,  time: "08:00", duration: 90,  active: true },
+  { name: "Final Evaluation",    offset: 90,  time: "08:00", duration: 90,  active: true },
+];
+
+var events = JSON.parse(JSON.stringify(defaultEvents));
+var participants = [];
+var generatedFiles = [];
+
+var DURATIONS = [30, 60, 90, 120, 180, 240, 360, 480];
+var DURATION_LABELS = ["30 min","1 hr","1.5 hr","2 hr","3 hr","4 hr","6 hr","8 hr"];
+
+function init() {
+  // Set today as default start date
+  var today = new Date();
+  document.getElementById('startDate').value = formatDateInput(today);
+  renderEvents();
+  document.getElementById('startDate').addEventListener('change', renderEvents);
+}
+
+function formatDateInput(d) {
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+
+function pad(n) { return n < 10 ? '0'+n : ''+n; }
+
+function addDays(dateStr, days) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function formatDisplay(d) {
+  if (!d) return '—';
+  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function renderEvents() {
+  var tbody = document.getElementById('eventsBody');
+  tbody.innerHTML = '';
+  var startDate = document.getElementById('startDate').value;
+
+  for (var i = 0; i < events.length; i++) {
+    (function(idx) {
+      var ev = events[idx];
+      var computed = addDays(startDate, ev.offset);
+      var displayDate = formatDisplay(computed);
+
+      var tr = document.createElement('tr');
+      if (!ev.active) tr.className = 'skipped-row';
+
+      // Toggle
+      var tdToggle = document.createElement('td');
+      tdToggle.className = 'toggle-cell';
+      var chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'toggle';
+      chk.checked = ev.active;
+      chk.onchange = function() {
+        events[idx].active = this.checked;
+        renderEvents();
+      };
+      tdToggle.appendChild(chk);
+      tr.appendChild(tdToggle);
+
+      // Name
+      var tdName = document.createElement('td');
+      tdName.className = 'event-name-cell';
+      var inpName = document.createElement('input');
+      inpName.type = 'text';
+      inpName.value = ev.name;
+      inpName.onchange = function() { events[idx].name = this.value; };
+      tdName.appendChild(inpName);
+      tr.appendChild(tdName);
+
+      // Offset
+      var tdOffset = document.createElement('td');
+      var inpOffset = document.createElement('input');
+      inpOffset.type = 'number';
+      inpOffset.min = 0;
+      inpOffset.value = ev.offset;
+      inpOffset.style.width = '70px';
+      inpOffset.onchange = function() {
+        events[idx].offset = parseInt(this.value) || 0;
+        renderEvents();
+      };
+      tdOffset.appendChild(inpOffset);
+      tr.appendChild(tdOffset);
+
+      // Computed date
+      var tdDate = document.createElement('td');
+      tdDate.className = 'computed-date';
+      tdDate.textContent = displayDate;
+      tr.appendChild(tdDate);
+
+      // Time
+      var tdTime = document.createElement('td');
+      var inpTime = document.createElement('input');
+      inpTime.type = 'time';
+      inpTime.value = ev.time;
+      inpTime.style.width = '100px';
+      inpTime.onchange = function() { events[idx].time = this.value; };
+      tdTime.appendChild(inpTime);
+      tr.appendChild(tdTime);
+
+      // Duration
+      var tdDur = document.createElement('td');
+      var sel = document.createElement('select');
+      sel.className = 'duration-select';
+      sel.style.width = '90px';
+      for (var d = 0; d < DURATIONS.length; d++) {
+        var opt = document.createElement('option');
+        opt.value = DURATIONS[d];
+        opt.textContent = DURATION_LABELS[d];
+        if (DURATIONS[d] === ev.duration) opt.selected = true;
+        sel.appendChild(opt);
+      }
+      sel.onchange = function() { events[idx].duration = parseInt(this.value); };
+      tdDur.appendChild(sel);
+      tr.appendChild(tdDur);
+
+      tbody.appendChild(tr);
+    })(i);
+  }
+}
+
+function addCustomEvent() {
+  var lastName = events.length > 0 ? events[events.length-1] : null;
+  var lastOffset = lastName ? lastName.offset + 14 : 0;
+  events.push({ name: "New Event", offset: lastOffset, time: "08:00", duration: 60, active: true });
+  renderEvents();
+}
+
+// Participants
+function addParticipant() {
+  var input = document.getElementById('participantInput');
+  var email = input.value.trim();
+  if (!email || participants.indexOf(email) !== -1) { input.value=''; return; }
+  participants.push(email);
+  input.value = '';
+  renderParticipants();
+}
+
+function removeParticipant(email) {
+  participants = participants.filter(function(e){ return e !== email; });
+  renderParticipants();
+}
+
+function renderParticipants() {
+  var list = document.getElementById('participantList');
+  list.innerHTML = '';
+  participants.forEach(function(email) {
+    var tag = document.createElement('div');
+    tag.className = 'participant-tag';
+    tag.innerHTML = email + '<button onclick="removeParticipant(\'' + email + '\')">×</button>';
+    list.appendChild(tag);
+  });
+}
+
+// ICS generation
+function pad2(n) { return n < 10 ? '0'+n : ''+n; }
+
+function toICSDate(dateObj) {
+  return dateObj.getFullYear().toString() +
+    pad2(dateObj.getMonth()+1) +
+    pad2(dateObj.getDate()) + 'T' +
+    pad2(dateObj.getHours()) +
+    pad2(dateObj.getMinutes()) + '00';
+}
+
+function generateUID() {
+  return Math.random().toString(36).substr(2,9) + '-' + Date.now() + '@experiment-cal';
+}
+
+function makeICS(ev, expName, location, notes, orgName, orgEmail, startDateStr) {
+  var base = new Date(startDateStr + 'T00:00:00');
+  base.setDate(base.getDate() + ev.offset);
+
+  var timeParts = ev.time.split(':');
+  base.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0);
+
+  var endDate = new Date(base.getTime() + ev.duration * 60000);
+
+  var dtStart = toICSDate(base);
+  var dtEnd = toICSDate(endDate);
+  var now = toICSDate(new Date());
+
+  var summary = '[' + expName + '] ' + ev.name;
+  var desc = notes ? notes.replace(/\n/g, '\\n') : '';
+
+  var lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Experiment Calendar Generator//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:REQUEST',
+    'BEGIN:VEVENT',
+    'UID:' + generateUID(),
+    'DTSTAMP:' + now,
+    'DTSTART:' + dtStart,
+    'DTEND:' + dtEnd,
+    'SUMMARY:' + summary,
+  ];
+
+  if (location) lines.push('LOCATION:' + location);
+  if (desc) lines.push('DESCRIPTION:' + desc);
+
+  if (orgEmail) {
+    var orgLine = 'ORGANIZER;CN=' + (orgName || orgEmail) + ':MAILTO:' + orgEmail;
+    lines.push(orgLine);
+  }
+
+  participants.forEach(function(email) {
+    lines.push('ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:MAILTO:' + email);
+  });
+
+  lines.push('END:VEVENT');
+  lines.push('END:VCALENDAR');
+
+  return lines.join('\r\n');
+}
+
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function generateAll() {
+  var startDate = document.getElementById('startDate').value;
+  var expName = document.getElementById('expName').value.trim() || 'Experiment';
+  var location = document.getElementById('expLocation').value.trim();
+  var notes = document.getElementById('expNotes').value.trim();
+  var orgName = document.getElementById('orgName').value.trim();
+  var orgEmail = document.getElementById('orgEmail').value.trim();
+
+  if (!startDate) { alert('Please set a start date.'); return; }
+
+  generatedFiles = [];
+  var grid = document.getElementById('downloadGrid');
+  grid.innerHTML = '';
+
+  var activeEvents = events.filter(function(e){ return e.active; });
+  if (activeEvents.length === 0) { alert('No events enabled.'); return; }
+
+  activeEvents.forEach(function(ev) {
+    var ics = makeICS(ev, expName, location, notes, orgName, orgEmail, startDate);
+    var filename = slugify(expName) + '--' + slugify(ev.name) + '.ics';
+    var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+
+    generatedFiles.push({ filename: filename, ics: ics });
+
+    var computed = addDays(startDate, ev.offset);
+
+    var card = document.createElement('div');
+    card.className = 'download-card';
+
+    var nameEl = document.createElement('div');
+    nameEl.className = 'ev-name';
+    nameEl.textContent = ev.name;
+
+    var dateEl = document.createElement('div');
+    dateEl.className = 'ev-date';
+    dateEl.textContent = formatDisplay(computed) + ' · ' + ev.time;
+
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.textContent = '⬇ ' + filename;
+
+    card.appendChild(nameEl);
+    card.appendChild(dateEl);
+    card.appendChild(link);
+    grid.appendChild(card);
+  });
+
+  var out = document.getElementById('outputSection');
+  out.className = 'output-section visible';
+  out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function downloadZip() {
+  if (generatedFiles.length === 0) { alert('Generate files first.'); return; }
+  var zip = new JSZip();
+  var expName = document.getElementById('expName').value.trim() || 'experiment';
+  generatedFiles.forEach(function(f) {
+    zip.file(f.filename, f.ics);
+  });
+  zip.generateAsync({ type: 'blob' }).then(function(blob) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = slugify(expName) + '-calendar.zip';
+    a.click();
+  });
+}
+
+init();
+</script>
+</body>
+</html>
 
