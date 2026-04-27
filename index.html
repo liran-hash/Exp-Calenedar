@@ -28,13 +28,13 @@
     color: var(--text);
     font-family: var(--sans);
     min-height: 100vh;
-    padding: 0 0 60px;
+    padding: 0 0 80px;
   }
 
   header {
     background: var(--text);
     color: var(--bg);
-    padding: 28px 40px;
+    padding: 24px 40px;
     display: flex;
     align-items: baseline;
     gap: 16px;
@@ -42,72 +42,82 @@
 
   header h1 {
     font-family: var(--serif);
-    font-size: 1.9rem;
+    font-size: 1.8rem;
     font-weight: 400;
     font-style: italic;
-    letter-spacing: -0.5px;
   }
 
   header span {
     font-family: var(--mono);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: #a09a8e;
     letter-spacing: 1px;
     text-transform: uppercase;
   }
 
-  .container {
-    max-width: 860px;
+  .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    max-width: 1160px;
     margin: 0 auto;
-    padding: 36px 24px 0;
+    padding: 28px 20px 0;
+    align-items: start;
+  }
+
+  .left-col { min-width: 0; }
+
+  .right-col {
+    position: sticky;
+    top: 20px;
   }
 
   .section {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 28px;
-    margin-bottom: 20px;
+    padding: 22px;
+    margin-bottom: 16px;
   }
 
   .section-title {
     font-family: var(--mono);
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: var(--muted);
-    margin-bottom: 20px;
-    padding-bottom: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
   }
 
   .field-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 14px;
+    margin-bottom: 14px;
   }
 
   .field-row.single { grid-template-columns: 1fr; }
-  .field-row.triple { grid-template-columns: 1fr 1fr 1fr; }
 
   label {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.4px;
     color: var(--muted);
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     text-transform: uppercase;
   }
 
-  input[type="text"], input[type="date"], input[type="time"], input[type="email"], textarea, select {
+  input[type="text"], input[type="date"], input[type="time"],
+  input[type="email"], textarea, select {
     width: 100%;
-    padding: 10px 14px;
+    padding: 9px 12px;
     border: 1px solid var(--border);
     border-radius: 5px;
     font-family: var(--sans);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     background: var(--bg);
     color: var(--text);
     transition: border-color 0.15s;
@@ -119,28 +129,24 @@
     background: #fff;
   }
 
-  textarea { resize: vertical; min-height: 60px; }
+  textarea { resize: vertical; min-height: 56px; }
 
-  /* Events table */
-  .events-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+  .events-table { width: 100%; border-collapse: collapse; }
 
   .events-table th {
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--muted);
-    padding: 8px 10px;
+    padding: 7px 8px;
     text-align: left;
     border-bottom: 1px solid var(--border);
     background: var(--bg);
   }
 
   .events-table td {
-    padding: 6px 6px;
+    padding: 5px 5px;
     border-bottom: 1px solid #f0ede8;
     vertical-align: middle;
   }
@@ -150,37 +156,30 @@
   .events-table input[type="text"],
   .events-table input[type="number"],
   .events-table input[type="time"] {
-    padding: 7px 10px;
-    font-size: 0.85rem;
+    padding: 6px 8px;
+    font-size: 0.83rem;
   }
 
-  .events-table input[type="number"] { width: 70px; }
-
-  .event-name-cell { min-width: 160px; }
+  .events-table input[type="number"] { width: 64px; }
+  .event-name-cell { min-width: 140px; }
 
   .computed-date {
     font-family: var(--mono);
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     color: var(--accent);
     white-space: nowrap;
-    padding: 0 8px;
+    padding: 0 6px;
   }
 
-  .toggle-cell {
-    text-align: center;
-  }
-
-  /* Checkbox toggle */
   .toggle {
     appearance: none;
-    width: 36px;
-    height: 20px;
+    width: 34px;
+    height: 19px;
     background: #ccc;
     border-radius: 10px;
     cursor: pointer;
     position: relative;
     transition: background 0.2s;
-    flex-shrink: 0;
   }
 
   .toggle:checked { background: var(--accent); }
@@ -188,362 +187,370 @@
   .toggle::after {
     content: '';
     position: absolute;
-    width: 14px;
-    height: 14px;
+    width: 13px; height: 13px;
     background: white;
     border-radius: 50%;
-    top: 3px;
-    left: 3px;
+    top: 3px; left: 3px;
     transition: left 0.2s;
   }
 
-  .toggle:checked::after { left: 19px; }
+  .toggle:checked::after { left: 18px; }
+  .skipped-row td { opacity: 0.35; }
 
-  /* Participants */
-  .participant-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .participant-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
 
   .participant-tag {
     background: var(--accent-light);
     border: 1px solid #b7dbc9;
     color: var(--accent);
-    font-size: 0.8rem;
-    padding: 4px 10px 4px 12px;
+    font-size: 0.78rem;
+    padding: 3px 10px 3px 11px;
     border-radius: 20px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     font-family: var(--mono);
   }
 
   .participant-tag button {
-    background: none;
-    border: none;
-    color: var(--accent);
-    cursor: pointer;
-    font-size: 1rem;
-    line-height: 1;
-    padding: 0;
-    opacity: 0.6;
+    background: none; border: none;
+    color: var(--accent); cursor: pointer;
+    font-size: 1rem; line-height: 1; padding: 0; opacity: 0.55;
   }
 
   .participant-tag button:hover { opacity: 1; }
 
-  .add-participant-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
+  .add-row { display: flex; gap: 8px; align-items: center; }
+  .add-row input { flex: 1; }
 
-  .add-participant-row input { flex: 1; }
-
-  /* Buttons */
   .btn {
-    padding: 10px 20px;
+    padding: 9px 18px;
     border-radius: 5px;
     font-family: var(--sans);
-    font-size: 0.85rem;
+    font-size: 0.83rem;
     font-weight: 600;
     cursor: pointer;
     border: none;
     transition: all 0.15s;
   }
 
-  .btn-sm { padding: 7px 14px; font-size: 0.8rem; }
-
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-  }
+  .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+  .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover { background: #235c42; }
-
-  .btn-secondary {
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
+  .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
   .btn-secondary:hover { background: var(--border); }
 
-  .btn-danger {
-    background: #fff0ed;
-    color: var(--accent2);
-    border: 1px solid #f0c0b0;
-  }
-  .btn-danger:hover { background: #ffe0d8; }
-
   .generate-bar {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: flex-end;
-    margin-top: 8px;
+    display: flex; gap: 12px; align-items: center;
+    justify-content: flex-end; margin-top: 4px;
   }
 
-  .generate-bar .btn-primary {
-    padding: 13px 32px;
-    font-size: 0.95rem;
-    letter-spacing: 0.3px;
-  }
+  .generate-bar .btn-primary { padding: 12px 30px; font-size: 0.92rem; }
 
   /* Output */
-  .output-section {
-    display: none;
-    background: var(--text);
-    color: var(--bg);
-    border-radius: 8px;
-    padding: 28px;
-    margin-bottom: 20px;
-  }
-
+  .output-section { display: none; margin-bottom: 16px; }
   .output-section.visible { display: block; }
 
-  .output-section .section-title { color: #7a7468; border-color: #333; }
-
-  .download-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 10px;
-    margin-top: 16px;
-  }
-
-  .download-card {
-    background: #2a2620;
-    border: 1px solid #3a3630;
-    border-radius: 6px;
-    padding: 14px 16px;
+  .invite-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
-  .download-card .ev-name {
+  .invite-info { flex: 1; min-width: 0; }
+
+  .invite-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
+
+  .invite-meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .invite-btn {
+    background: #0078d4;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-family: var(--sans);
+    font-size: 0.78rem;
     font-weight: 600;
-    font-size: 0.88rem;
-    color: #f0ede8;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: inline-block;
+    transition: background 0.15s;
   }
 
-  .download-card .ev-date {
+  .invite-btn:hover { background: #006bb5; }
+
+  /* Calendar */
+  .calendar-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .mini-month { margin-bottom: 22px; }
+  .mini-month:last-of-type { margin-bottom: 0; }
+
+  .month-header {
     font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--accent);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 7px;
   }
 
-  .download-card .ev-skip {
+  .mini-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .cal-dow {
     font-family: var(--mono);
-    font-size: 0.72rem;
-    color: #b5451b;
-    font-style: italic;
+    font-size: 0.58rem;
+    color: var(--muted);
+    text-align: center;
+    padding: 2px 0 3px;
   }
 
-  .download-card a {
-    margin-top: 6px;
-    padding: 7px 14px;
+  .cal-day {
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 3px 1px;
+    border-radius: 3px;
+    min-height: 20px;
+    line-height: 1.5;
+  }
+
+  .cal-day.today { font-weight: 700; color: var(--accent2); }
+
+  .cal-day.has-event {
     background: var(--accent);
     color: white;
-    border-radius: 4px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 0.78rem;
-    font-weight: 600;
-    font-family: var(--mono);
-    letter-spacing: 0.5px;
-  }
-
-  .download-card a:hover { background: #235c42; }
-
-  .download-all-btn {
-    margin-top: 16px;
-    background: #f5f2ec;
-    color: #1a1814;
-    padding: 11px 24px;
-    border-radius: 5px;
-    border: none;
-    font-family: var(--sans);
+    border-radius: 50%;
     font-weight: 700;
-    font-size: 0.9rem;
     cursor: pointer;
-    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    margin: auto;
+    display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    font-size: 0.68rem;
   }
 
-  .download-all-btn:hover { background: white; }
+  .cal-day.has-event:hover { background: #235c42; }
 
-  .hint {
-    font-size: 0.78rem;
+  .cal-legend {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 0.68rem;
     color: var(--muted);
-    margin-top: 6px;
     font-style: italic;
+    line-height: 1.6;
   }
 
-  .skipped-row td { opacity: 0.4; }
+  .event-tooltip {
+    position: fixed;
+    background: var(--text);
+    color: var(--bg);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.73rem;
+    font-family: var(--mono);
+    pointer-events: none;
+    z-index: 1000;
+    white-space: nowrap;
+    display: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
 
-  .duration-select { width: 100%; }
+  .hint { font-size: 0.76rem; color: var(--muted); font-style: italic; margin-top: 5px; }
 
-  @media (max-width: 600px) {
-    header { padding: 20px; }
-    .container { padding: 20px 12px 0; }
-    .field-row { grid-template-columns: 1fr; }
-    .field-row.triple { grid-template-columns: 1fr 1fr; }
-    .section { padding: 18px; }
+  @media (max-width: 820px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .right-col { position: static; }
+    header { padding: 18px 20px; }
     header h1 { font-size: 1.4rem; }
   }
 </style>
 </head>
 <body>
 
+<div id="tooltip" class="event-tooltip"></div>
+
 <header>
   <h1>Experiment Calendar</h1>
-  <span>ICS Invitation Generator</span>
+  <span>Outlook Invitation Generator</span>
 </header>
 
-<div class="container">
+<div class="main-layout">
 
-  <!-- Experiment Info -->
-  <div class="section">
-    <div class="section-title">Experiment Details</div>
-    <div class="field-row">
-      <div>
-        <label>Experiment Name</label>
-        <input type="text" id="expName" placeholder="e.g. Tomato Trial 2026 — Block A" />
+  <div class="left-col">
+
+    <div class="section">
+      <div class="section-title">Experiment Details</div>
+      <div class="field-row">
+        <div>
+          <label>Experiment Name</label>
+          <input type="text" id="expName" placeholder="e.g. Tomato Trial 2026 — Block A" />
+        </div>
+        <div>
+          <label>Location / Greenhouse</label>
+          <input type="text" id="expLocation" placeholder="e.g. GH-3" />
+        </div>
       </div>
-      <div>
-        <label>Location / Greenhouse</label>
-        <input type="text" id="expLocation" placeholder="e.g. GH-3, Breeding Station" />
+      <div class="field-row">
+        <div>
+          <label>Start Date (Day 0)</label>
+          <input type="date" id="startDate" />
+        </div>
+        <div>
+          <label>Default Event Time</label>
+          <input type="time" id="defaultTime" value="08:00" />
+        </div>
+      </div>
+      <div class="field-row single">
+        <div>
+          <label>Notes (added to all invitations)</label>
+          <textarea id="expNotes" placeholder="Optional: protocol, instructions, links..."></textarea>
+        </div>
       </div>
     </div>
-    <div class="field-row">
-      <div>
-        <label>Start Date (Day 0)</label>
-        <input type="date" id="startDate" />
-      </div>
-      <div>
-        <label>Default Event Time</label>
-        <input type="time" id="defaultTime" value="08:00" />
+
+    <div class="section">
+      <div class="section-title">Events Schedule</div>
+      <table class="events-table">
+        <thead>
+          <tr>
+            <th>On</th>
+            <th>Event Name</th>
+            <th>Day +</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody id="eventsBody"></tbody>
+      </table>
+      <div style="margin-top:12px;">
+        <button class="btn btn-sm btn-secondary" onclick="addCustomEvent()">+ Add Event</button>
       </div>
     </div>
-    <div class="field-row single">
-      <div>
-        <label>Notes / Description (added to all events)</label>
-        <textarea id="expNotes" placeholder="Optional: breeding protocol, instructions, links..."></textarea>
+
+    <div class="section">
+      <div class="section-title">Participants</div>
+      <div id="participantList" class="participant-list"></div>
+      <div class="add-row">
+        <input type="email" id="participantInput" placeholder="colleague@hazera.com"
+          onkeydown="if(event.key==='Enter'){addParticipant();event.preventDefault();}" />
+        <button class="btn btn-sm btn-primary" onclick="addParticipant()">Add</button>
+      </div>
+      <p class="hint">All participants will be added to every enabled event invitation.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Organizer</div>
+      <div class="field-row">
+        <div>
+          <label>Your Name</label>
+          <input type="text" id="orgName" placeholder="e.g. Liran Yadgary" />
+        </div>
+        <div>
+          <label>Your Work Email</label>
+          <input type="email" id="orgEmail" placeholder="liran@hazera.com" />
+        </div>
       </div>
     </div>
+
+    <div class="generate-bar">
+      <span class="hint">One Outlook draft per event</span>
+      <button class="btn btn-primary" onclick="generateAll()">Generate Invitations</button>
+    </div>
+
+    <div class="output-section" id="outputSection">
+      <div class="section" style="margin-top:16px; padding-bottom:14px;">
+        <div class="section-title">Send Invitations — click each button to open in Outlook</div>
+        <div id="inviteCards"></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Events -->
-  <div class="section">
-    <div class="section-title">Events Schedule</div>
-    <p class="hint" style="margin-bottom:14px;">Toggle events on/off. Adjust day offsets from Day 0 (start date). Each row shows the computed calendar date.</p>
-    <table class="events-table" id="eventsTable">
-      <thead>
-        <tr>
-          <th>On</th>
-          <th>Event Name</th>
-          <th>Day Offset</th>
-          <th>Computed Date</th>
-          <th>Time</th>
-          <th>Duration</th>
-        </tr>
-      </thead>
-      <tbody id="eventsBody">
-      </tbody>
-    </table>
-    <div style="margin-top:14px; display:flex; gap:10px;">
-      <button class="btn btn-sm btn-secondary" onclick="addCustomEvent()">+ Add Custom Event</button>
-    </div>
-  </div>
-
-  <!-- Participants -->
-  <div class="section">
-    <div class="section-title">Participants (All Events)</div>
-    <div id="participantList" class="participant-list"></div>
-    <div class="add-participant-row">
-      <input type="email" id="participantInput" placeholder="colleague@hazera.com" onkeydown="if(event.key==='Enter'){addParticipant();event.preventDefault();}" />
-      <button class="btn btn-sm btn-primary" onclick="addParticipant()">Add</button>
-    </div>
-    <p class="hint">Press Enter or click Add. Each person will appear as an attendee on all enabled events.</p>
-  </div>
-
-  <!-- Organizer -->
-  <div class="section">
-    <div class="section-title">Organizer</div>
-    <div class="field-row">
-      <div>
-        <label>Your Name</label>
-        <input type="text" id="orgName" placeholder="e.g. Liran Cohen" />
+  <!-- RIGHT: Calendar -->
+  <div class="right-col">
+    <div class="calendar-section">
+      <div class="section-title">Schedule Overview</div>
+      <div id="calendarContainer">
+        <p class="hint">Set a start date to see events on the calendar.</p>
       </div>
-      <div>
-        <label>Your Email</label>
-        <input type="email" id="orgEmail" placeholder="liran@hazera.com" />
-      </div>
-    </div>
-  </div>
-
-  <div class="generate-bar">
-    <span class="hint">Each event downloads as a separate .ics file</span>
-    <button class="btn btn-primary" onclick="generateAll()">Generate ICS Files</button>
-  </div>
-
-  <!-- Output -->
-  <div class="output-section" id="outputSection">
-    <div class="section-title">Generated Files</div>
-    <p style="font-size:0.82rem; color:#a09a8e; margin-bottom:4px;">
-      Double-click each .ics to open in Outlook and send invitations, or use "Download All" to get a ZIP.
-    </p>
-    <div class="download-grid" id="downloadGrid"></div>
-    <div style="margin-top:16px;">
-      <button class="download-all-btn" onclick="downloadZip()">⬇ Download All as ZIP</button>
     </div>
   </div>
 
 </div>
 
-<!-- JSZip for ZIP download -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
 <script>
-// Default events: name, default day offset
 var defaultEvents = [
-  { name: "Tagging",             offset: 0,   time: "08:00", duration: 60,  active: true },
-  { name: "Sampling",            offset: 7,   time: "08:00", duration: 90,  active: true },
-  { name: "Nursery Selection",   offset: 21,  time: "08:00", duration: 120, active: true },
-  { name: "Planting",            offset: 35,  time: "07:00", duration: 180, active: true },
-  { name: "First Evaluation",    offset: 56,  time: "08:00", duration: 90,  active: true },
-  { name: "Final Evaluation",    offset: 90,  time: "08:00", duration: 90,  active: true },
+  { name: "Tagging",           offset: 0,  time: "08:00", duration: 60,  active: true },
+  { name: "Sampling",          offset: 7,  time: "08:00", duration: 90,  active: true },
+  { name: "Nursery Selection", offset: 21, time: "08:00", duration: 120, active: true },
+  { name: "Planting",          offset: 35, time: "07:00", duration: 180, active: true },
+  { name: "First Evaluation",  offset: 56, time: "08:00", duration: 90,  active: true },
+  { name: "Final Evaluation",  offset: 90, time: "08:00", duration: 90,  active: true },
 ];
 
 var events = JSON.parse(JSON.stringify(defaultEvents));
 var participants = [];
-var generatedFiles = [];
 
-var DURATIONS = [30, 60, 90, 120, 180, 240, 360, 480];
-var DURATION_LABELS = ["30 min","1 hr","1.5 hr","2 hr","3 hr","4 hr","6 hr","8 hr"];
-
-function init() {
-  // Set today as default start date
-  var today = new Date();
-  document.getElementById('startDate').value = formatDateInput(today);
-  renderEvents();
-  document.getElementById('startDate').addEventListener('change', renderEvents);
-}
-
-function formatDateInput(d) {
-  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
-}
+var DURATIONS     = [30, 60, 90, 120, 180, 240, 360, 480];
+var DUR_LABELS    = ["30 min","1 hr","1.5 hr","2 hr","3 hr","4 hr","6 hr","8 hr"];
+var MONTHS_LONG   = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var DAYS_SHORT    = ["Su","Mo","Tu","We","Th","Fr","Sa"];
 
 function pad(n) { return n < 10 ? '0'+n : ''+n; }
 
+function init() {
+  var today = new Date();
+  document.getElementById('startDate').value =
+    today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
+  renderEvents();
+  renderCalendar();
+  document.getElementById('startDate').addEventListener('change', function() {
+    renderEvents();
+    renderCalendar();
+  });
+}
+
 function addDays(dateStr, days) {
-  if (!dateStr) return '';
   var d = new Date(dateStr + 'T00:00:00');
   d.setDate(d.getDate() + days);
   return d;
 }
 
 function formatDisplay(d) {
-  if (!d) return '—';
-  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  var dn = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return dn[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS_LONG[d.getMonth()].substr(0,3) + ' ' + d.getFullYear();
+}
+
+function formatDur(mins) {
+  if (mins < 60) return mins + ' min';
+  if (mins % 60 === 0) return (mins/60) + ' hr';
+  return Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
 }
 
 function renderEvents() {
@@ -554,81 +561,61 @@ function renderEvents() {
   for (var i = 0; i < events.length; i++) {
     (function(idx) {
       var ev = events[idx];
-      var computed = addDays(startDate, ev.offset);
-      var displayDate = formatDisplay(computed);
+      var computed = startDate ? addDays(startDate, ev.offset) : null;
 
       var tr = document.createElement('tr');
       if (!ev.active) tr.className = 'skipped-row';
 
       // Toggle
-      var tdToggle = document.createElement('td');
-      tdToggle.className = 'toggle-cell';
+      var tdT = document.createElement('td');
       var chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.className = 'toggle';
-      chk.checked = ev.active;
+      chk.type = 'checkbox'; chk.className = 'toggle'; chk.checked = ev.active;
       chk.onchange = function() {
         events[idx].active = this.checked;
-        renderEvents();
+        renderEvents(); renderCalendar();
       };
-      tdToggle.appendChild(chk);
-      tr.appendChild(tdToggle);
+      tdT.appendChild(chk); tr.appendChild(tdT);
 
       // Name
-      var tdName = document.createElement('td');
-      tdName.className = 'event-name-cell';
-      var inpName = document.createElement('input');
-      inpName.type = 'text';
-      inpName.value = ev.name;
-      inpName.onchange = function() { events[idx].name = this.value; };
-      tdName.appendChild(inpName);
-      tr.appendChild(tdName);
+      var tdN = document.createElement('td'); tdN.className = 'event-name-cell';
+      var inpN = document.createElement('input'); inpN.type = 'text'; inpN.value = ev.name;
+      inpN.onchange = function() { events[idx].name = this.value; renderCalendar(); };
+      tdN.appendChild(inpN); tr.appendChild(tdN);
 
       // Offset
-      var tdOffset = document.createElement('td');
-      var inpOffset = document.createElement('input');
-      inpOffset.type = 'number';
-      inpOffset.min = 0;
-      inpOffset.value = ev.offset;
-      inpOffset.style.width = '70px';
-      inpOffset.onchange = function() {
-        events[idx].offset = parseInt(this.value) || 0;
-        renderEvents();
+      var tdO = document.createElement('td');
+      var inpO = document.createElement('input');
+      inpO.type = 'number'; inpO.min = 0; inpO.value = ev.offset;
+      inpO.onchange = function() {
+        events[idx].offset = parseInt(this.value)||0;
+        renderEvents(); renderCalendar();
       };
-      tdOffset.appendChild(inpOffset);
-      tr.appendChild(tdOffset);
+      tdO.appendChild(inpO); tr.appendChild(tdO);
 
-      // Computed date
-      var tdDate = document.createElement('td');
-      tdDate.className = 'computed-date';
-      tdDate.textContent = displayDate;
-      tr.appendChild(tdDate);
+      // Date
+      var tdD = document.createElement('td');
+      tdD.className = 'computed-date';
+      tdD.textContent = computed ? formatDisplay(computed) : '—';
+      tr.appendChild(tdD);
 
       // Time
-      var tdTime = document.createElement('td');
-      var inpTime = document.createElement('input');
-      inpTime.type = 'time';
-      inpTime.value = ev.time;
-      inpTime.style.width = '100px';
-      inpTime.onchange = function() { events[idx].time = this.value; };
-      tdTime.appendChild(inpTime);
-      tr.appendChild(tdTime);
+      var tdTm = document.createElement('td');
+      var inpTm = document.createElement('input');
+      inpTm.type = 'time'; inpTm.value = ev.time; inpTm.style.width = '95px';
+      inpTm.onchange = function() { events[idx].time = this.value; };
+      tdTm.appendChild(inpTm); tr.appendChild(tdTm);
 
       // Duration
-      var tdDur = document.createElement('td');
-      var sel = document.createElement('select');
-      sel.className = 'duration-select';
-      sel.style.width = '90px';
+      var tdDr = document.createElement('td');
+      var sel = document.createElement('select'); sel.style.width = '88px';
       for (var d = 0; d < DURATIONS.length; d++) {
         var opt = document.createElement('option');
-        opt.value = DURATIONS[d];
-        opt.textContent = DURATION_LABELS[d];
+        opt.value = DURATIONS[d]; opt.textContent = DUR_LABELS[d];
         if (DURATIONS[d] === ev.duration) opt.selected = true;
         sel.appendChild(opt);
       }
       sel.onchange = function() { events[idx].duration = parseInt(this.value); };
-      tdDur.appendChild(sel);
-      tr.appendChild(tdDur);
+      tdDr.appendChild(sel); tr.appendChild(tdDr);
 
       tbody.appendChild(tr);
     })(i);
@@ -636,177 +623,232 @@ function renderEvents() {
 }
 
 function addCustomEvent() {
-  var lastName = events.length > 0 ? events[events.length-1] : null;
-  var lastOffset = lastName ? lastName.offset + 14 : 0;
-  events.push({ name: "New Event", offset: lastOffset, time: "08:00", duration: 60, active: true });
-  renderEvents();
+  var last = events.length > 0 ? events[events.length-1] : null;
+  events.push({ name: "New Event", offset: last ? last.offset+14 : 0, time:"08:00", duration:60, active:true });
+  renderEvents(); renderCalendar();
 }
 
-// Participants
 function addParticipant() {
-  var input = document.getElementById('participantInput');
-  var email = input.value.trim();
-  if (!email || participants.indexOf(email) !== -1) { input.value=''; return; }
+  var inp = document.getElementById('participantInput');
+  var email = inp.value.trim();
+  if (!email || participants.indexOf(email) !== -1) { inp.value=''; return; }
   participants.push(email);
-  input.value = '';
+  inp.value = '';
   renderParticipants();
 }
 
-function removeParticipant(email) {
-  participants = participants.filter(function(e){ return e !== email; });
+function removeParticipant(idx) {
+  participants.splice(idx, 1);
   renderParticipants();
 }
 
 function renderParticipants() {
   var list = document.getElementById('participantList');
   list.innerHTML = '';
-  participants.forEach(function(email) {
+  participants.forEach(function(email, i) {
     var tag = document.createElement('div');
     tag.className = 'participant-tag';
-    tag.innerHTML = email + '<button onclick="removeParticipant(\'' + email + '\')">×</button>';
+    tag.innerHTML = email + '<button onclick="removeParticipant(' + i + ')">×</button>';
     list.appendChild(tag);
   });
 }
 
-// ICS generation
-function pad2(n) { return n < 10 ? '0'+n : ''+n; }
+function makeMailto(ev, expName, location, notes, orgName, orgEmail, startDateStr) {
+  var base = addDays(startDateStr, ev.offset);
+  var tp = ev.time.split(':');
+  base.setHours(parseInt(tp[0]), parseInt(tp[1]), 0);
+  var endD = new Date(base.getTime() + ev.duration * 60000);
+  var endTime = pad(endD.getHours()) + ':' + pad(endD.getMinutes());
 
-function toICSDate(dateObj) {
-  return dateObj.getFullYear().toString() +
-    pad2(dateObj.getMonth()+1) +
-    pad2(dateObj.getDate()) + 'T' +
-    pad2(dateObj.getHours()) +
-    pad2(dateObj.getMinutes()) + '00';
-}
+  var subject = '[' + expName + '] ' + ev.name + ' — ' + formatDisplay(base);
 
-function generateUID() {
-  return Math.random().toString(36).substr(2,9) + '-' + Date.now() + '@experiment-cal';
-}
+  var body = 'You are invited to the following experiment event:\n\n';
+  body += 'Event:      ' + ev.name + '\n';
+  body += 'Experiment: ' + expName + '\n';
+  body += 'Date:       ' + formatDisplay(base) + '\n';
+  body += 'Time:       ' + ev.time + ' \u2013 ' + endTime + '\n';
+  if (location) body += 'Location:   ' + location + '\n';
+  body += 'Duration:   ' + formatDur(ev.duration) + '\n';
+  if (orgName || orgEmail) body += 'Organizer:  ' + (orgName||'') + (orgEmail ? ' <' + orgEmail + '>' : '') + '\n';
+  if (notes) body += '\nNotes:\n' + notes + '\n';
+  body += '\nPlease confirm your attendance.\n';
 
-function makeICS(ev, expName, location, notes, orgName, orgEmail, startDateStr) {
-  var base = new Date(startDateStr + 'T00:00:00');
-  base.setDate(base.getDate() + ev.offset);
-
-  var timeParts = ev.time.split(':');
-  base.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0);
-
-  var endDate = new Date(base.getTime() + ev.duration * 60000);
-
-  var dtStart = toICSDate(base);
-  var dtEnd = toICSDate(endDate);
-  var now = toICSDate(new Date());
-
-  var summary = '[' + expName + '] ' + ev.name;
-  var desc = notes ? notes.replace(/\n/g, '\\n') : '';
-
-  var lines = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Experiment Calendar Generator//EN',
-    'CALSCALE:GREGORIAN',
-    'METHOD:REQUEST',
-    'BEGIN:VEVENT',
-    'UID:' + generateUID(),
-    'DTSTAMP:' + now,
-    'DTSTART:' + dtStart,
-    'DTEND:' + dtEnd,
-    'SUMMARY:' + summary,
-  ];
-
-  if (location) lines.push('LOCATION:' + location);
-  if (desc) lines.push('DESCRIPTION:' + desc);
-
-  if (orgEmail) {
-    var orgLine = 'ORGANIZER;CN=' + (orgName || orgEmail) + ':MAILTO:' + orgEmail;
-    lines.push(orgLine);
-  }
-
-  participants.forEach(function(email) {
-    lines.push('ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:MAILTO:' + email);
-  });
-
-  lines.push('END:VEVENT');
-  lines.push('END:VCALENDAR');
-
-  return lines.join('\r\n');
-}
-
-function slugify(str) {
-  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  var to = participants.join(';');
+  return 'mailto:' + encodeURIComponent(to)
+    + '?subject=' + encodeURIComponent(subject)
+    + '&body=' + encodeURIComponent(body);
 }
 
 function generateAll() {
   var startDate = document.getElementById('startDate').value;
-  var expName = document.getElementById('expName').value.trim() || 'Experiment';
-  var location = document.getElementById('expLocation').value.trim();
-  var notes = document.getElementById('expNotes').value.trim();
-  var orgName = document.getElementById('orgName').value.trim();
-  var orgEmail = document.getElementById('orgEmail').value.trim();
+  var expName   = document.getElementById('expName').value.trim() || 'Experiment';
+  var location  = document.getElementById('expLocation').value.trim();
+  var notes     = document.getElementById('expNotes').value.trim();
+  var orgName   = document.getElementById('orgName').value.trim();
+  var orgEmail  = document.getElementById('orgEmail').value.trim();
 
   if (!startDate) { alert('Please set a start date.'); return; }
 
-  generatedFiles = [];
-  var grid = document.getElementById('downloadGrid');
-  grid.innerHTML = '';
+  var active = events.filter(function(e){ return e.active; });
+  if (active.length === 0) { alert('No events enabled.'); return; }
 
-  var activeEvents = events.filter(function(e){ return e.active; });
-  if (activeEvents.length === 0) { alert('No events enabled.'); return; }
+  var cards = document.getElementById('inviteCards');
+  cards.innerHTML = '';
 
-  activeEvents.forEach(function(ev) {
-    var ics = makeICS(ev, expName, location, notes, orgName, orgEmail, startDate);
-    var filename = slugify(expName) + '--' + slugify(ev.name) + '.ics';
-    var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-    var url = URL.createObjectURL(blob);
-
-    generatedFiles.push({ filename: filename, ics: ics });
-
-    var computed = addDays(startDate, ev.offset);
+  active.forEach(function(ev) {
+    var mailto = makeMailto(ev, expName, location, notes, orgName, orgEmail, startDate);
+    var base = addDays(startDate, ev.offset);
+    var tp = ev.time.split(':');
+    var startD = new Date(base.getTime());
+    startD.setHours(parseInt(tp[0]), parseInt(tp[1]), 0);
+    var endD = new Date(startD.getTime() + ev.duration * 60000);
+    var endTime = pad(endD.getHours()) + ':' + pad(endD.getMinutes());
 
     var card = document.createElement('div');
-    card.className = 'download-card';
+    card.className = 'invite-card';
 
-    var nameEl = document.createElement('div');
-    nameEl.className = 'ev-name';
-    nameEl.textContent = ev.name;
+    var info = document.createElement('div');
+    info.className = 'invite-info';
 
-    var dateEl = document.createElement('div');
-    dateEl.className = 'ev-date';
-    dateEl.textContent = formatDisplay(computed) + ' · ' + ev.time;
+    var name = document.createElement('div');
+    name.className = 'invite-name';
+    name.textContent = ev.name;
 
-    var link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.textContent = '⬇ ' + filename;
+    var meta = document.createElement('div');
+    meta.className = 'invite-meta';
+    meta.textContent = formatDisplay(base) + '  ·  ' + ev.time + '–' + endTime + '  ·  ' + formatDur(ev.duration);
 
-    card.appendChild(nameEl);
-    card.appendChild(dateEl);
-    card.appendChild(link);
-    grid.appendChild(card);
+    info.appendChild(name);
+    info.appendChild(meta);
+
+    var btn = document.createElement('a');
+    btn.className = 'invite-btn';
+    btn.href = mailto;
+    btn.textContent = '✉ Open in Outlook';
+
+    card.appendChild(info);
+    card.appendChild(btn);
+    cards.appendChild(card);
   });
 
-  var out = document.getElementById('outputSection');
-  out.className = 'output-section visible';
-  out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('outputSection').className = 'output-section visible';
+  renderCalendar();
+  document.getElementById('outputSection').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
-function downloadZip() {
-  if (generatedFiles.length === 0) { alert('Generate files first.'); return; }
-  var zip = new JSZip();
-  var expName = document.getElementById('expName').value.trim() || 'experiment';
-  generatedFiles.forEach(function(f) {
-    zip.file(f.filename, f.ics);
+// ── MINI CALENDAR ──
+function renderCalendar() {
+  var startDate = document.getElementById('startDate').value;
+  var container = document.getElementById('calendarContainer');
+
+  if (!startDate) {
+    container.innerHTML = '<p class="hint">Set a start date to see the overview.</p>';
+    return;
+  }
+
+  var eventMap = {};
+  events.forEach(function(ev) {
+    if (!ev.active) return;
+    var d = addDays(startDate, ev.offset);
+    var key = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+    if (!eventMap[key]) eventMap[key] = [];
+    eventMap[key].push(ev.name);
   });
-  zip.generateAsync({ type: 'blob' }).then(function(blob) {
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = slugify(expName) + '-calendar.zip';
-    a.click();
-  });
+
+  var active = events.filter(function(e){ return e.active; });
+  if (active.length === 0) {
+    container.innerHTML = '<p class="hint">No active events.</p>';
+    return;
+  }
+
+  var offsets = active.map(function(e){ return e.offset; });
+  var firstD = addDays(startDate, Math.min.apply(null, offsets));
+  var lastD  = addDays(startDate, Math.max.apply(null, offsets));
+  var today  = new Date(); today.setHours(0,0,0,0);
+
+  container.innerHTML = '';
+
+  var cur = new Date(firstD.getFullYear(), firstD.getMonth(), 1);
+  var endM = new Date(lastD.getFullYear(), lastD.getMonth(), 1);
+
+  while (cur <= endM) {
+    var yr = cur.getFullYear(), mo = cur.getMonth();
+
+    var monthDiv = document.createElement('div');
+    monthDiv.className = 'mini-month';
+
+    var hdr = document.createElement('div');
+    hdr.className = 'month-header';
+    hdr.textContent = MONTHS_LONG[mo] + ' ' + yr;
+    monthDiv.appendChild(hdr);
+
+    var grid = document.createElement('div');
+    grid.className = 'mini-cal-grid';
+
+    DAYS_SHORT.forEach(function(d) {
+      var dh = document.createElement('div');
+      dh.className = 'cal-dow'; dh.textContent = d;
+      grid.appendChild(dh);
+    });
+
+    var firstDay = new Date(yr, mo, 1).getDay();
+    for (var b = 0; b < firstDay; b++) {
+      var blank = document.createElement('div');
+      blank.className = 'cal-day empty';
+      grid.appendChild(blank);
+    }
+
+    var daysInMo = new Date(yr, mo+1, 0).getDate();
+    for (var day = 1; day <= daysInMo; day++) {
+      var key = yr + '-' + mo + '-' + day;
+      var dayEl = document.createElement('div');
+      dayEl.className = 'cal-day';
+      dayEl.textContent = day;
+
+      var thisDate = new Date(yr, mo, day);
+      if (thisDate.getTime() === today.getTime()) dayEl.classList.add('today');
+
+      if (eventMap[key]) {
+        dayEl.classList.add('has-event');
+        var names = eventMap[key].join(' + ');
+        (function(el, label) {
+          el.onmouseenter = function(e) {
+            var tt = document.getElementById('tooltip');
+            tt.textContent = label;
+            tt.style.display = 'block';
+            tt.style.left = (e.clientX + 14) + 'px';
+            tt.style.top  = (e.clientY - 32) + 'px';
+          };
+          el.onmousemove = function(e) {
+            var tt = document.getElementById('tooltip');
+            tt.style.left = (e.clientX + 14) + 'px';
+            tt.style.top  = (e.clientY - 32) + 'px';
+          };
+          el.onmouseleave = function() {
+            document.getElementById('tooltip').style.display = 'none';
+          };
+        })(dayEl, names);
+      }
+
+      grid.appendChild(dayEl);
+    }
+
+    monthDiv.appendChild(grid);
+    container.appendChild(monthDiv);
+    cur.setMonth(cur.getMonth() + 1);
+  }
+
+  var legend = document.createElement('div');
+  legend.className = 'cal-legend';
+  legend.innerHTML = '&#9679; Green circle = experiment event<br>Hover to see event name';
+  container.appendChild(legend);
 }
+
+document.addEventListener('scroll', function() {
+  document.getElementById('tooltip').style.display = 'none';
+});
 
 init();
 </script>
 </body>
 </html>
-
