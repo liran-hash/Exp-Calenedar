@@ -1,1 +1,663 @@
 
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment Calendar</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #f5f2ec;
+    --surface: #fff;
+    --border: #d9d3c7;
+    --text: #1a1814;
+    --muted: #7a7468;
+    --accent: #2d6a4f;
+    --accent-light: #e8f5ef;
+    --conflict: #b5451b;
+    --conflict-light: #fff0ed;
+    --outlook: #0078d4;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--text);
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.3px; }
+  .app-sub { font-family: var(--mono); font-size: 0.6rem; color: #a09a8e; letter-spacing: 1px; }
+
+  /* ── SECTIONS ── */
+  .section { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 14px; }
+
+  .sec-title {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 3px;
+  }
+
+  input[type="text"], input[type="date"], input[type="time"],
+  input[type="email"], input[type="number"], textarea, select {
+    width: 100%;
+    padding: 6px 9px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    margin-bottom: 8px;
+  }
+
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); background: #fff; }
+  textarea { resize: vertical; min-height: 44px; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* ── EVENTS TABLE ── */
+  .ev-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+  .ev-table th {
+    font-family: var(--mono); font-size: 0.55rem; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--muted); padding: 5px 4px;
+    border-bottom: 1px solid var(--border); background: var(--bg); text-align: left;
+  }
+  .ev-table td { padding: 3px 3px; border-bottom: 1px solid #f0ede8; vertical-align: middle; }
+  .ev-table tr:last-child td { border-bottom: none; }
+  .ev-table input[type="text"] { font-size: 0.75rem; padding: 4px 5px; margin-bottom: 0; }
+  .ev-table input[type="number"] { font-size: 0.75rem; padding: 4px 5px; margin-bottom: 0; width: 48px; }
+  .ev-table input[type="time"] { font-size: 0.75rem; padding: 4px 5px; margin-bottom: 0; width: 76px; }
+  .ev-table select { font-size: 0.72rem; padding: 4px 4px; margin-bottom: 0; width: 72px; }
+
+  .ev-date { font-family: var(--mono); font-size: 0.62rem; color: var(--accent); white-space: nowrap; }
+  .ev-date.conflict { color: var(--conflict); font-weight: 600; }
+
+  .conflict-row td { background: #fff7f5 !important; }
+
+  .toggle {
+    appearance: none; width: 28px; height: 16px; background: #ccc;
+    border-radius: 8px; cursor: pointer; position: relative; transition: background 0.2s;
+  }
+  .toggle:checked { background: var(--accent); }
+  .toggle::after {
+    content: ''; position: absolute; width: 10px; height: 10px;
+    background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s;
+  }
+  .toggle:checked::after { left: 15px; }
+  .skipped-row td { opacity: 0.35; }
+
+  /* ── PARTICIPANTS ── */
+  .participant-list { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+  .ptag {
+    background: var(--accent-light); border: 1px solid #b7dbc9; color: var(--accent);
+    font-size: 0.68rem; padding: 2px 7px 2px 8px; border-radius: 12px;
+    display: flex; align-items: center; gap: 4px; font-family: var(--mono);
+  }
+  .ptag button { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 0.85rem; padding: 0; opacity: 0.5; line-height: 1; }
+  .ptag button:hover { opacity: 1; }
+  .add-row { display: flex; gap: 6px; }
+  .add-row input { flex: 1; margin-bottom: 0; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 7px 14px; border-radius: 4px; font-family: var(--sans);
+    font-size: 0.78rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s;
+  }
+  .btn-sm { padding: 4px 9px; font-size: 0.7rem; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #235c42; }
+  .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-outlook { background: var(--outlook); color: white; }
+  .btn-outlook:hover { background: #006bb5; }
+  .btn-full { width: 100%; text-align: center; padding: 9px; font-size: 0.82rem; }
+
+  /* ── EVENT CARDS (output) ── */
+  .ev-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .ev-card.conflict-card { border-color: #f0c0b0; background: var(--conflict-light); }
+
+  .ev-card-info { flex: 1; min-width: 0; }
+  .ev-card-name { font-weight: 600; font-size: 0.82rem; margin-bottom: 2px; }
+  .ev-card-meta { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+  .ev-card-conflict { font-family: var(--mono); font-size: 0.6rem; color: var(--conflict); margin-top: 2px; }
+
+  /* ── STATUS ── */
+  .status-msg {
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    display: none;
+  }
+  .status-msg.success { background: var(--accent-light); color: var(--accent); display: block; }
+  .status-msg.error { background: var(--conflict-light); color: var(--conflict); display: block; }
+  .status-msg.info { background: #e8f3fc; color: var(--outlook); display: block; }
+
+  /* ── STANDALONE MODE ── */
+  .standalone-note {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+    color: #6d5c00;
+    margin: 12px 14px;
+    line-height: 1.5;
+  }
+
+  .hint { font-size: 0.7rem; color: var(--muted); font-style: italic; margin-top: 3px; }
+
+  /* Conflict badge */
+  .conflict-badge {
+    background: var(--conflict);
+    color: white;
+    font-size: 0.58rem;
+    font-family: var(--mono);
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  /* conflict summary */
+  .conflict-sum {
+    font-size: 0.68rem;
+    color: var(--conflict);
+    font-family: var(--mono);
+    padding: 4px 0;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <div class="app-title">Experiment Calendar</div>
+    <div class="app-sub">Hazera Breeding · Meeting Generator</div>
+  </div>
+</div>
+
+<!-- Standalone mode note (shown when not in Outlook) -->
+<div class="standalone-note" id="standaloneNote" style="display:none">
+  ℹ️ Running in browser mode. Open inside Outlook to create real meeting invitations.
+  In browser mode, individual .ics files are available for download below.
+</div>
+
+<!-- ── EXPERIMENT DETAILS ── -->
+<div class="section">
+  <div class="sec-title">Experiment Details</div>
+  <label>Experiment Name</label>
+  <input type="text" id="expName" placeholder="e.g. עגבנייה 2026 — מקטע א" oninput="refreshAll()" dir="auto" />
+  <div class="field-row">
+    <div>
+      <label>Start Date</label>
+      <input type="date" id="startDate" />
+    </div>
+    <div>
+      <label>Default Time</label>
+      <input type="time" id="defaultTime" value="08:00" />
+    </div>
+  </div>
+  <label>Notes (added to all meetings)</label>
+  <textarea id="expNotes" placeholder="פרוטוקול, הנחיות, קישורים..." dir="auto"></textarea>
+</div>
+
+<!-- ── EVENTS SCHEDULE ── -->
+<div class="section">
+  <div class="sec-title">Events Schedule</div>
+  <table class="ev-table">
+    <thead>
+      <tr>
+        <th>On</th>
+        <th>Event</th>
+        <th>Location</th>
+        <th>Day+</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Dur</th>
+      </tr>
+    </thead>
+    <tbody id="eventsBody"></tbody>
+  </table>
+  <div style="margin-top:8px; display:flex; align-items:center; gap:10px;">
+    <button class="btn btn-sm btn-secondary" onclick="addCustomEvent()">+ Add</button>
+    <span class="conflict-sum" id="conflictSum"></span>
+  </div>
+</div>
+
+<!-- ── PARTICIPANTS ── -->
+<div class="section">
+  <div class="sec-title">Participants</div>
+  <div id="participantList" class="participant-list"></div>
+  <div class="add-row">
+    <input type="email" id="participantInput" placeholder="colleague@hazera.com"
+      onkeydown="if(event.key==='Enter'){addParticipant();event.preventDefault();}" />
+    <button class="btn btn-sm btn-primary" onclick="addParticipant()">Add</button>
+  </div>
+  <p class="hint" style="margin-top:4px;">Added to all meeting invitations.</p>
+</div>
+
+<!-- ── GENERATE ── -->
+<div class="section">
+  <div class="sec-title">Create Meetings</div>
+  <div id="statusMsg" class="status-msg"></div>
+  <button class="btn btn-primary btn-full" onclick="generateMeetings()" id="generateBtn">
+    Generate Meetings
+  </button>
+  <p class="hint" style="margin-top:6px; text-align:center;" id="generateHint"></p>
+</div>
+
+<!-- ── OUTPUT CARDS ── -->
+<div class="section" id="outputSection" style="display:none;">
+  <div class="sec-title">Meeting Invitations</div>
+  <div id="eventCards"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+var isInOutlook = false;
+var outlookReady = false;
+
+var defaultEvDefs = [
+  { name:"Tagging",           location:"", offset:0,  time:"08:00", duration:60,  active:true },
+  { name:"Sampling",          location:"", offset:7,  time:"08:00", duration:90,  active:true },
+  { name:"Nursery Selection", location:"", offset:21, time:"08:00", duration:120, active:true },
+  { name:"Planting",          location:"", offset:35, time:"07:00", duration:180, active:true },
+  { name:"First Evaluation",  location:"", offset:56, time:"08:00", duration:90,  active:true },
+  { name:"Final Evaluation",  location:"", offset:90, time:"08:00", duration:90,  active:true },
+];
+
+var defaultParticipants = [
+  // Pre-fill with your team — add emails here
+];
+
+var evDefs = JSON.parse(JSON.stringify(defaultEvDefs));
+var participants = defaultParticipants.slice();
+var createdCount = 0;
+
+var DURATIONS  = [30,60,90,120,180,240,360,480];
+var DUR_LABELS = ["30m","1h","1.5h","2h","3h","4h","6h","8h"];
+var MONTHS     = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var DAYS       = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+function pad(n){ return n<10?'0'+n:''+n; }
+
+// ══════════════════════════════════════════════
+// OFFICE.JS INIT
+// ══════════════════════════════════════════════
+Office.initialize = function(reason) {
+  isInOutlook = true;
+  outlookReady = true;
+  document.getElementById('standaloneNote').style.display = 'none';
+  document.getElementById('generateBtn').textContent = 'Create Meetings in Outlook';
+  document.getElementById('generateHint').textContent =
+    'Each active event opens as a new meeting in Outlook — review and send.';
+  init();
+};
+
+// Fallback if not in Outlook
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    if (!outlookReady) {
+      document.getElementById('standaloneNote').style.display = 'block';
+      document.getElementById('generateBtn').textContent = 'Generate ICS Files';
+      document.getElementById('generateHint').textContent =
+        'Download individual .ics files — open each in Outlook desktop to send.';
+      init();
+    }
+  }, 800);
+});
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+function init() {
+  var today = new Date();
+  document.getElementById('startDate').value =
+    today.getFullYear()+'-'+pad(today.getMonth()+1)+'-'+pad(today.getDate());
+  renderParticipants();
+  renderTable();
+  document.getElementById('startDate').addEventListener('change', function(){ refreshAll(); });
+}
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+function addDays(dateStr, days){
+  var d = new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+days); return d;
+}
+
+function formatDisp(d){
+  return DAYS[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+}
+
+function formatDur(m){
+  if(m<60) return m+' min';
+  if(m%60===0) return (m/60)+' hr';
+  return Math.floor(m/60)+'h '+(m%60)+'m';
+}
+
+// ══════════════════════════════════════════════
+// EVENTS TABLE
+// ══════════════════════════════════════════════
+function renderTable(){
+  var tbody = document.getElementById('eventsBody');
+  tbody.innerHTML = '';
+  var sd = document.getElementById('startDate').value;
+  var conflictCount = 0;
+
+  for(var i=0; i<evDefs.length; i++){
+    (function(idx){
+      var ev = evDefs[idx];
+      var computed = sd ? addDays(sd, ev.offset) : null;
+
+      var tr = document.createElement('tr');
+      if(!ev.active) tr.className = 'skipped-row';
+
+      // Toggle
+      var tdT = document.createElement('td');
+      var chk = document.createElement('input'); chk.type='checkbox'; chk.className='toggle'; chk.checked=ev.active;
+      chk.onchange = function(){ evDefs[idx].active=this.checked; refreshAll(); };
+      tdT.appendChild(chk); tr.appendChild(tdT);
+
+      // Name (supports Hebrew)
+      var tdN = document.createElement('td');
+      var inpN = document.createElement('input'); inpN.type='text'; inpN.value=ev.name; inpN.setAttribute('dir','auto');
+      inpN.onchange = function(){ evDefs[idx].name=this.value; };
+      tdN.appendChild(inpN); tr.appendChild(tdN);
+
+      // Location
+      var tdL = document.createElement('td');
+      var inpL = document.createElement('input'); inpL.type='text'; inpL.value=ev.location||''; inpL.placeholder='GH-3';
+      inpL.onchange = function(){ evDefs[idx].location=this.value; };
+      tdL.appendChild(inpL); tr.appendChild(tdL);
+
+      // Offset
+      var tdO = document.createElement('td');
+      var inpO = document.createElement('input'); inpO.type='number'; inpO.min=0; inpO.value=ev.offset;
+      inpO.onchange = function(){ evDefs[idx].offset=parseInt(this.value)||0; refreshAll(); };
+      tdO.appendChild(inpO); tr.appendChild(tdO);
+
+      // Date
+      var tdD = document.createElement('td');
+      tdD.className = 'ev-date';
+      tdD.textContent = computed ? formatDisp(computed) : '—';
+      tr.appendChild(tdD);
+
+      // Time
+      var tdTm = document.createElement('td');
+      var inpTm = document.createElement('input'); inpTm.type='time'; inpTm.value=ev.time;
+      inpTm.onchange = function(){ evDefs[idx].time=this.value; };
+      tdTm.appendChild(inpTm); tr.appendChild(tdTm);
+
+      // Duration
+      var tdDr = document.createElement('td');
+      var sel = document.createElement('select');
+      for(var d=0;d<DURATIONS.length;d++){
+        var opt = document.createElement('option');
+        opt.value=DURATIONS[d]; opt.textContent=DUR_LABELS[d];
+        if(DURATIONS[d]===ev.duration) opt.selected=true;
+        sel.appendChild(opt);
+      }
+      sel.onchange = function(){ evDefs[idx].duration=parseInt(this.value); };
+      tdDr.appendChild(sel); tr.appendChild(tdDr);
+
+      tbody.appendChild(tr);
+    })(i);
+  }
+}
+
+function addCustomEvent(){
+  var last = evDefs.length>0 ? evDefs[evDefs.length-1] : null;
+  evDefs.push({name:"New Event", location:"", offset:last?last.offset+14:0, time:"08:00", duration:60, active:true});
+  refreshAll();
+}
+
+function refreshAll(){
+  renderTable();
+}
+
+// ══════════════════════════════════════════════
+// PARTICIPANTS
+// ══════════════════════════════════════════════
+function addParticipant(){
+  var inp = document.getElementById('participantInput');
+  var email = inp.value.trim();
+  if(!email || participants.indexOf(email)!==-1){ inp.value=''; return; }
+  participants.push(email);
+  inp.value='';
+  renderParticipants();
+}
+
+function removeParticipant(idx){
+  participants.splice(idx,1);
+  renderParticipants();
+}
+
+function renderParticipants(){
+  var list = document.getElementById('participantList');
+  list.innerHTML='';
+  participants.forEach(function(email,i){
+    var tag = document.createElement('div'); tag.className='ptag';
+    tag.innerHTML = email+'<button onclick="removeParticipant('+i+')">×</button>';
+    list.appendChild(tag);
+  });
+}
+
+// ══════════════════════════════════════════════
+// GENERATE — dual mode
+// ══════════════════════════════════════════════
+function generateMeetings(){
+  var sd = document.getElementById('startDate').value;
+  var expName = document.getElementById('expName').value.trim() || 'Experiment';
+  var notes = document.getElementById('expNotes').value.trim();
+
+  if(!sd){ showStatus('Please set a start date.','error'); return; }
+
+  var active = evDefs.filter(function(e){ return e.active; });
+  if(active.length===0){ showStatus('No events enabled.','error'); return; }
+
+  if(isInOutlook){
+    createOutlookMeetings(active, expName, notes, sd);
+  } else {
+    createICSFiles(active, expName, notes, sd);
+  }
+}
+
+// ── OUTLOOK MODE: create real meetings via Office.js ──
+function createOutlookMeetings(active, expName, notes, sd){
+  showStatus('Creating '+active.length+' meeting'+(active.length>1?'s':'')+'...','info');
+  document.getElementById('outputSection').style.display='none';
+  document.getElementById('eventCards').innerHTML='';
+
+  var cards = document.getElementById('eventCards');
+  var successCount = 0;
+
+  active.forEach(function(ev, i){
+    setTimeout(function(){
+      try {
+        var base = addDays(sd, ev.offset);
+        var tp = ev.time.split(':');
+        var startD = new Date(base); startD.setHours(parseInt(tp[0]),parseInt(tp[1]),0,0);
+        var endD = new Date(startD.getTime()+ev.duration*60000);
+
+        var subject = '['+expName+'] '+ev.name;
+        var body = 'Experiment: '+expName+'\n'
+          +'Event: '+ev.name+'\n'
+          +'Date: '+formatDisp(startD)+'\n'
+          +'Time: '+ev.time+' – '+pad(endD.getHours())+':'+pad(endD.getMinutes())+'\n'
+          +'Duration: '+formatDur(ev.duration)+'\n';
+        if(ev.location) body+='Location: '+ev.location+'\n';
+        if(notes) body+='\nNotes:\n'+notes+'\n';
+
+        // Build attendees array
+        var attendees = participants.map(function(email){
+          return { emailAddress: email, displayName: email };
+        });
+
+        // Use Office.js to compose new meeting
+        Office.context.mailbox.displayNewAppointmentForm({
+          requiredAttendees: attendees,
+          optionalAttendees: [],
+          start: startD,
+          end: endD,
+          location: ev.location || '',
+          subject: subject,
+          body: body
+        });
+
+        successCount++;
+
+        // Add success card
+        var card = document.createElement('div');
+        card.className = 'ev-card';
+        card.innerHTML = '<div class="ev-card-info">'
+          +'<div class="ev-card-name">✓ '+ev.name+'</div>'
+          +'<div class="ev-card-meta">'+formatDisp(startD)+' · '+ev.time+'</div>'
+          +'</div>';
+        cards.appendChild(card);
+
+        if(i===active.length-1){
+          document.getElementById('outputSection').style.display='block';
+          showStatus(successCount+' meeting'+(successCount>1?'s':'')+' opened in Outlook. Review and click Send for each.','success');
+        }
+
+      } catch(err) {
+        var card = document.createElement('div');
+        card.className = 'ev-card conflict-card';
+        card.innerHTML = '<div class="ev-card-info"><div class="ev-card-name">⚠ '+ev.name+'</div>'
+          +'<div class="ev-card-conflict">Error: '+err.message+'</div></div>';
+        cards.appendChild(card);
+        document.getElementById('outputSection').style.display='block';
+      }
+    }, i * 600); // stagger each meeting by 600ms so Outlook can open them
+  });
+}
+
+// ── BROWSER/STANDALONE MODE: individual .ics downloads ──
+function createICSFiles(active, expName, notes, sd){
+  var cards = document.getElementById('eventCards');
+  cards.innerHTML='';
+
+  active.forEach(function(ev){
+    var base = addDays(sd, ev.offset);
+    var tp = ev.time.split(':');
+    var startD = new Date(base); startD.setHours(parseInt(tp[0]),parseInt(tp[1]),0,0);
+    var endD = new Date(startD.getTime()+ev.duration*60000);
+
+    var ics = makeICS(ev, expName, notes, startD, endD);
+    var filename = slugify(expName)+'--'+slugify(ev.name)+'.ics';
+    var blob = new Blob([ics],{type:'text/calendar;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+
+    var card = document.createElement('div');
+    card.className = 'ev-card';
+
+    var info = document.createElement('div'); info.className='ev-card-info';
+    var name = document.createElement('div'); name.className='ev-card-name'; name.textContent=ev.name;
+    var meta = document.createElement('div'); meta.className='ev-card-meta';
+    meta.textContent = formatDisp(startD)+' · '+ev.time+(ev.location?' · '+ev.location:'');
+    info.appendChild(name); info.appendChild(meta);
+
+    var btn = document.createElement('a');
+    btn.className='btn btn-outlook btn-sm';
+    btn.href=url; btn.download=filename;
+    btn.textContent='⬇ Download';
+
+    card.appendChild(info); card.appendChild(btn);
+    cards.appendChild(card);
+  });
+
+  document.getElementById('outputSection').style.display='block';
+  showStatus('Ready — click each Download button, then open in Outlook.','success');
+  document.getElementById('outputSection').scrollIntoView({behavior:'smooth'});
+}
+
+// ── ICS helper ──
+function toICSDate(d){
+  return d.getFullYear().toString()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';
+}
+
+function makeICS(ev, expName, notes, startD, endD){
+  var summary='['+expName+'] '+ev.name;
+  var desc='Experiment: '+expName+'\\nEvent: '+ev.name+'\\nDate: '+formatDisp(startD)+'\\nDuration: '+formatDur(ev.duration);
+  if(ev.location) desc+='\\nLocation: '+ev.location;
+  if(notes) desc+='\\n\\nNotes:\\n'+notes.replace(/\n/g,'\\n');
+  var uid=Math.random().toString(36).substr(2,9)+'-'+Date.now()+'@hazera';
+
+  var lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Hazera//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH',
+    'BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+toICSDate(new Date()),
+    'DTSTART:'+toICSDate(startD),'DTEND:'+toICSDate(endD),
+    'SUMMARY:'+summary,'DESCRIPTION:'+desc];
+  if(ev.location) lines.push('LOCATION:'+ev.location);
+
+  // Add attendees to ICS
+  participants.forEach(function(email){
+    lines.push('ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:MAILTO:'+email);
+  });
+
+  lines.push('END:VEVENT','END:VCALENDAR');
+  return lines.join('\r\n');
+}
+
+function slugify(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+// ── Status messages ──
+function showStatus(msg, type){
+  var el=document.getElementById('statusMsg');
+  el.textContent=msg; el.className='status-msg '+type;
+}
+</script>
+</body>
+</html>
